@@ -14,6 +14,7 @@ class Stupid: UIViewController {
         super.viewDidLoad()
         
         self.stupidFunction()
+        self.anotherstupidfunctionorsomething()
         
     }
     
@@ -23,5 +24,9 @@ class Stupid: UIViewController {
         } else {
             fatalError("hey bby")
         }
+    }
+    
+    func anotherstupidfunctionorsomething() {
+        print("playboy girls are so much sexy")
     }
 }
