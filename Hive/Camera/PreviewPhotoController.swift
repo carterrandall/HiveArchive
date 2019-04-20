@@ -30,6 +30,8 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     
     var backgroundTask: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier.invalid
     
+    var isFromCameraRoll: Bool = false
+    
     let previewImageView: UIImageView = {
         let iv = UIImageView(frame: .zero)
         iv.contentMode = .scaleAspectFill
@@ -45,6 +47,7 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         
         setupViews()
+        setupNavBar()
     }
     
     var bottomAlphaView: UIView!
@@ -75,25 +78,41 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
         previewHUD.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 40)
         previewHUD.centerYAnchor.constraint(equalTo: bottomAlphaView.centerYAnchor, constant: -10).isActive = true
         
+       
+        
+        self.hideKeyboardWhenTappedOutside()
+    }
+    
+    fileprivate func setupNavBar() {
+        
         let dismissButtonView: UIButton = {
             let button = UIButton(type: .system)
-            button.setImage(UIImage(named: "badform"), for: .normal)
             button.tintColor = .white
             button.addTarget(self, action: #selector(handleDismiss), for: .touchUpInside)
             button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
             return button
         }()
-       
+        
+        if self.isFromCameraRoll {
+            dismissButtonView.setImage(UIImage(named: "back"), for: .normal)
+        } else {
+            dismissButtonView.setImage(UIImage(named: "badform"), for: .normal)
+        }
+        
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dismissButtonView)
         navigationController?.navigationBar.tintColor = .white
         navigationController?.makeTransparent()
         
-        self.hideKeyboardWhenTappedOutside()
+
     }
 
     
     @objc fileprivate func handleDismiss() {
-        self.dismiss(animated: false, completion: nil)
+        if self.isFromCameraRoll {
+            self.navigationController?.popViewController(animated: true)
+        } else {
+            self.dismiss(animated: false, completion: nil)
+        }
     }
   
     fileprivate func overlayImage(imageView: UIImageView) -> UIImage {

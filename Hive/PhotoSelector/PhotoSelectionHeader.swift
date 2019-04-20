@@ -28,6 +28,16 @@ class PhotoSelectionHeader: UICollectionViewCell, UIScrollViewDelegate {
         }
     }
     
+    var isFromCamera: Bool? {
+        didSet {
+            if let isCamera = isFromCamera, isCamera {
+                self.fillLayer.fillColor = UIColor.clear.cgColor
+            } else {
+                self.fillLayer.fillColor = UIColor(white: 0, alpha: 0.5).cgColor
+            }
+        }
+    }
+    
     let scrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.maximumZoomScale = 6.0

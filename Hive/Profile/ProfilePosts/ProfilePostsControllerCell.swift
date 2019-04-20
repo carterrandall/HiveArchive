@@ -14,6 +14,7 @@ protocol ProfilePostsControllerCellDelegate: class {
     func updatePostCount(postCount: Int)
     func decrementPostCount()
     func updateFriendCountFromReload(friendCount: Int)
+    func privateProfileAction()
 }
 
 class ProfilePostsControllerCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -54,6 +55,66 @@ class ProfilePostsControllerCell: UICollectionViewCell, UICollectionViewDataSour
                 }
             }
         }
+    }
+    
+    var privateButton: UIButton!
+    var privateProfile: Bool? {
+        didSet {
+            if let pp = privateProfile, pp {
+                privateButton = UIButton(type: .system)
+                privateButton.titleLabel?.lineBreakMode = .byWordWrapping
+                privateButton.titleLabel?.textAlignment = .center
+                privateButton.addTarget(self, action: #selector(handlePrivateAction), for: .touchUpInside)
+                let attributedTitle = NSMutableAttributedString(string: "This profile is private.", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+    
+                if let user = self.user {
+                    let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.mainRed()]
+                    if user.friendStatus == 1 {
+                        attributedTitle.append(NSAttributedString(string: "\nWhen \(user.username) accepts your request you will be able to see their posts.", attributes: attributes))
+                        privateButton.isEnabled = false
+                        privateButton.setAttributedTitle(attributedTitle, for: .disabled)
+                    } else if user.friendStatus == 2 {
+                        attributedTitle.append(NSAttributedString(string: "\nAccept \(user.username)'s friend request to see their posts.", attributes: attributes))
+                        privateButton.setAttributedTitle(attributedTitle, for: .normal)
+                    } else if user.friendStatus == 3 {
+                        attributedTitle.append(NSAttributedString(string: "\nSend \(user.username) a friend request to see their posts.", attributes: attributes))
+                        privateButton.setAttributedTitle(attributedTitle, for: .normal)
+                    }
+                } else {
+                    privateButton.isEnabled = false
+                    privateButton.setAttributedTitle(attributedTitle, for: .disabled)
+                }
+
+                addSubview(privateButton)
+                privateButton?.anchor(top: nil, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 40, paddingBottom: 0, paddingRight: 40, width: 0, height: 0)
+                privateButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+            }
+        }
+    }
+    
+    @objc fileprivate func handlePrivateAction() {
+        print("PRIVATE ACTION")
+        
+        privateButton.isEnabled = false
+        
+        delegate?.privateProfileAction()
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        let attributedTitle = NSMutableAttributedString(string: "This profile is private.", attributes: attributes)
+        
+        if let user = self.user {
+            if user.friendStatus == 2 {
+                //print("remove that shit")
+            } else if user.friendStatus == 3 {
+                attributedTitle.append(NSAttributedString(string: "\nWhen \(user.username) accepts your request you will be able to see their posts.", attributes: attributes))
+            }
+        }
+        
+        privateButton.setAttributedTitle(attributedTitle, for: .disabled)
+       
+    }
+    
+    func showPostsOnBecomingFriends() {
+        
     }
     
     lazy var collectionView: UICollectionView = {

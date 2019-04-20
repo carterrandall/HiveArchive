@@ -241,7 +241,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
     
     var postJson = [String: Any]()
     var friendJson = [[String: Any]]()
-    
+    var privateProfile: Bool?
     fileprivate func loadProfile(uid: Int?) {
         print("loading profile")
         self.hasLoadedProfile = true
@@ -251,13 +251,12 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
             params["UID"] = uid
         }
         MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/loadProfile", params: params) { (json, _) in
-            guard let json = json as? [String: Any] else { return }
-            
+            guard let json = json as? [String: Any] else {print("WHAT ARE YOU LIDDING "); return }
+            print("HREE")
             if let userDict = json["User"] as? [String: Any] {
                 var user = User(dictionary: userDict)
                 
                 if let status = userDict["status"] as? Int, let myId = MainTabBarController.currentUser?.uid {
-                    
                     user.friendStatus = status.getFriendStatusFromInt(friendId: user.uid, myId: myId)
                 } else {
                     user.friendStatus = 3
@@ -279,6 +278,13 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
             
             if let postJson = json["Posts"] as? [[String: Any]], let paginateCount = json["paginatePostCount"] as? Int {
                 self.postJson = ["Posts": postJson, "paginatePostCount": paginateCount] as [String: Any]
+            }
+            
+            if let privateProfile = json["privateProfile"] as? Bool {
+                self.privateProfile = privateProfile
+                print("got it?", json)
+            } else {
+                print("DUN DUN DUN", json)
             }
             
             if let friendJson = json["Friends"] as? [[String: Any]] {
@@ -378,8 +384,12 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
             }
             cell.delegate = self
             
-            cell.postJson = self.postJson
-             
+            if let pp = self.privateProfile, pp {
+                cell.privateProfile = true
+            } else {
+                cell.postJson = self.postJson
+            }
+            
             cell.profileState = self.profileState
             
             return cell
@@ -416,6 +426,12 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
 }
 
 extension ProfileMainController : ProfilePostsControllerCellDelegate {
+    
+    func privateProfileAction() {
+        DispatchQueue.main.async {
+            self.headerView.profileEditAddButton.sendActions(for: .touchUpInside)
+        }
+    }
     
     func presentAlertController(alert: UIAlertController) {
         DispatchQueue.main.async {
@@ -554,6 +570,16 @@ extension ProfileMainController : ProfileHeaderViewDelegate {
     
     
     
+    func animatePop(title: String) {
+        DispatchQueue.main.async {
+            self.animatePopup(title: title)
+        }
+    }
+    func displayUserActionSheet(alertController: UIAlertController) {
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
     
     func editProfile(state: ProfileState) {
     

@@ -278,6 +278,7 @@ struct UserSettings {
     let commentNotifications: Bool
     let likeNotifications: Bool
     let friendNotifications: Bool
+    let privateProfile: Bool
     
     init(dictionary: [String: Any]) {
         let ghostInt = dictionary["ghost"] as? Int ?? 1
@@ -288,6 +289,8 @@ struct UserSettings {
         self.likeNotifications = (likesNotificationsInt == 1 ? true : false)
         let friendsNotificationsInt = dictionary["friendNotifications"] as? Int ?? 0
         self.friendNotifications = (friendsNotificationsInt == 1 ? true : false)
+        let privateProfileInt = dictionary["privateProfile"] as? Int ?? 0
+        self.privateProfile = (privateProfileInt == 1 ? true : false)
     }
 }
 

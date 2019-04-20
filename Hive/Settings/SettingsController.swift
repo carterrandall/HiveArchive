@@ -75,7 +75,6 @@ class SettingsController: UICollectionViewController, UICollectionViewDelegateFl
         navigationItem.leftBarButtonItem = backButton
         navigationController?.navigationBar.tintColor = .black
         
-    
     }
     
     @objc func handleBack() {
@@ -114,6 +113,7 @@ class SettingsController: UICollectionViewController, UICollectionViewDelegateFl
         case 0:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: locationCellId, for: indexPath) as! LocationSettingsCell
             cell.ghost = self.settings?.ghost
+            cell.privateProfile = self.settings?.privateProfile
             return cell
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: notificationsCellId, for: indexPath) as! NotificationsSettingsCell
@@ -145,7 +145,7 @@ class SettingsController: UICollectionViewController, UICollectionViewDelegateFl
     
         switch indexPath.item {
         case 0:
-            return CGSize(width: view.frame.width, height: 90)
+            return CGSize(width: view.frame.width, height: 144)
         case 1:
             return CGSize(width: view.frame.width, height: 180)
         case 2:
