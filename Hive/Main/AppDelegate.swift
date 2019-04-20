@@ -10,8 +10,6 @@ import UserNotifications
     var window: UIWindow?
 
     
-    
-    
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         UserDefaults.standard.setDeviceToken(token: deviceToken.reduce("", {$0 + String(format: "%02X", $1)}))
     }
@@ -23,7 +21,6 @@ import UserNotifications
  
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        
         
         print("got a notificaiton")
         print(userInfo)
