@@ -68,7 +68,6 @@
 		B1621194220684AB00382C98 /* MapRenderExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1621193220684AB00382C98 /* MapRenderExtensions.swift */; };
 		B16211962206865400382C98 /* InvalidHiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16211952206865400382C98 /* InvalidHiveView.swift */; };
 		B16211982206908D00382C98 /* DraggableAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16211972206908D00382C98 /* DraggableAnnotationView.swift */; };
-		B167E7E6226BA2DE009BB48E /* testicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B167E7E5226BA2DE009BB48E /* testicle.swift */; };
 		B189B7502224BC8800B32F95 /* PasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B189B74F2224BC8800B32F95 /* PasswordController.swift */; };
 		B194E49F21D5ACC1005E66B6 /* LoginSignUpMainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B194E49E21D5ACC1005E66B6 /* LoginSignUpMainController.swift */; };
 		B194E4A221D5AD93005E66B6 /* LoginControllerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B194E4A121D5AD93005E66B6 /* LoginControllerCell.swift */; };
@@ -205,7 +204,6 @@
 		B1621193220684AB00382C98 /* MapRenderExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRenderExtensions.swift; sourceTree = "<group>"; };
 		B16211952206865400382C98 /* InvalidHiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidHiveView.swift; sourceTree = "<group>"; };
 		B16211972206908D00382C98 /* DraggableAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableAnnotationView.swift; sourceTree = "<group>"; };
-		B167E7E5226BA2DE009BB48E /* testicle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testicle.swift; sourceTree = "<group>"; };
 		B189B74F2224BC8800B32F95 /* PasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordController.swift; sourceTree = "<group>"; };
 		B194E49E21D5ACC1005E66B6 /* LoginSignUpMainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSignUpMainController.swift; sourceTree = "<group>"; };
 		B194E4A121D5AD93005E66B6 /* LoginControllerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginControllerCell.swift; sourceTree = "<group>"; };
@@ -623,7 +621,6 @@
 		B1FA2A8821A1D6DC00B4EAE2 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				B167E7E5226BA2DE009BB48E /* testicle.swift */,
 				B1FA2A9321A1D6DC00B4EAE2 /* AppDelegate.swift */,
 				B1FA2A9221A1D6DC00B4EAE2 /* MainTabBarController.swift */,
 				B11DA0102210EF00007F85D0 /* Reachability.swift */,
@@ -1042,7 +1039,6 @@
 				B1BF305C21DAC3DC00B3EB22 /* ChatHeaderView.swift in Sources */,
 				B194E49F21D5ACC1005E66B6 /* LoginSignUpMainController.swift in Sources */,
 				B127D78921D06F3B009DE27F /* ProfileFriendsControllerCell.swift in Sources */,
-				B167E7E6226BA2DE009BB48E /* testicle.swift in Sources */,
 				B123263E21FCF75F00A51B88 /* CreateNewHive.swift in Sources */,
 				B1FA2AAA21A1D6F600B4EAE2 /* FriendCell.swift in Sources */,
 				B127D78221D0522E009DE27F /* ProfileHeaderView.swift in Sources */,
