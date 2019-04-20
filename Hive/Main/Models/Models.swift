@@ -100,6 +100,7 @@ struct User {
     var friendStatus: Int = 3
     var hiveName: String?
     var requestCreationDate: Double?
+    var sharingLocation: Bool?
     
     init(dictionary: [String: Any]) {
         
@@ -108,9 +109,11 @@ struct User {
         self.username = dictionary["username"] as? String ?? ""
         
         let urlString = dictionary["profileImageUrl"] as? String ?? ""
-        
         self.profileImageUrl = URL(string: urlString) ?? URL(string: MainTabBarController.defualtProfileImageUrl)!
-        
+        if let notsharingLocation = dictionary["notSharingLocation"] as? Bool {
+            self.sharingLocation = !notsharingLocation
+        }
+    
         self.HID = dictionary["hid"] as? Int ?? nil
         self.friends = dictionary["friends"] as? Int ?? 0
         self.postcount = dictionary["posts"] as? Int ?? 0

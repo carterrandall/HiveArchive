@@ -19,9 +19,9 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     static var currentUser : User?
 //    static let serverurl = "https://hiveproduction.appspot.com"
     static let defualtProfileImageUrl = "https://storage.googleapis.com/hive_productionbucket/defaultimage3lowsize.png"
-//    static let serverurl = "http://192.168.1.53:8080"
+    static let serverurl = "http://192.168.1.53:8080"
     
-    static let serverurl = "https://hivebuild-c7559.appspot.com"
+//    static let serverurl = "https://hivebuild-c7559.appspot.com"
 //    static let serverurl = "http://192.168.2.26:8080"
     static var didLogout = false
     static let requestManager = RequestManager()

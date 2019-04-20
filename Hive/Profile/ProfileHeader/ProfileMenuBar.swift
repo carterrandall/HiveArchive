@@ -16,9 +16,7 @@ class ProfileMenuBar: UIView, UICollectionViewDataSource, UICollectionViewDelega
         didSet {
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
-                
                 self.collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .centeredHorizontally)
-                
             }
         }
     }

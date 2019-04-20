@@ -448,8 +448,24 @@ extension ProfileMainController : ProfilePostsControllerCellDelegate {
 }
 
 extension ProfileMainController : ProfileHeaderViewDelegate {
-    func displayUserActionSheet() {
+
+    func displayUserActionSheet(friends:Bool, sharingLocation: Bool) {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        if (friends){
+            if (sharingLocation){
+                alertController.addAction(UIAlertAction(title: "Stop Sharing Location", style: .default, handler: { (_) in
+                    DispatchQueue.main.async {
+                        self.handleStopSharingLocation()
+                    }
+                }))
+            }else{
+                alertController.addAction(UIAlertAction(title: "Resume Sharing Location", style: .default, handler: { (_) in
+                    DispatchQueue.main.async {
+                        self.handleStartSharingLocation()
+                    }
+                }))
+            }
+        }
         alertController.addAction(UIAlertAction(title: "Block User", style: .destructive, handler: { (_) in
             DispatchQueue.main.async {
                 self.handleBlock()
@@ -462,7 +478,6 @@ extension ProfileMainController : ProfileHeaderViewDelegate {
             }
         }))
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
         self.present(alertController, animated: true, completion: nil)
     }
     
@@ -494,6 +509,44 @@ extension ProfileMainController : ProfileHeaderViewDelegate {
                     self.animatePopup(title: "Reported User")
                 }
             }
+        }
+    }
+    
+    
+    fileprivate func handleStopSharingLocation(){
+        // set the user attribute to true probably, although not sure how to do that and shit. (should be the same user both spots I assume though). 
+        print("stop sharing location")
+        if let uid = self.user?.uid {
+            MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/stopSharingLocationWithUser", params: ["UID":uid]) { (response) in
+                if response.response?.statusCode == 200 {
+                    if let username = self.user?.username {
+                        self.animatePopup(title: "You have stopped sharing location with \(username).")
+                    } else {
+                        self.animatePopup(title: "You have stopped sharing your location.")
+                    }
+                    self.user?.sharingLocation = false
+                }
+            }
+            
+        }
+    }
+    
+    fileprivate func handleStartSharingLocation(){
+        if let uid = self.user?.uid {
+            MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/startSharingLocationWithUser", params: ["UID":uid]) { (response) in
+                if response.response?.statusCode == 200 {
+                    if let username = self.user?.username {
+                        self.animatePopup(title: "You have started sharing location with \(username).")
+                    } else {
+                        self.animatePopup(title: "You have started sharing your location.")
+                    }
+                    self.user?.sharingLocation = false
+                    // ^^^^^^ This is the part where I need you to set this on the user ovject in the thing. 
+                    
+                    
+                }
+            }
+            
         }
     }
     

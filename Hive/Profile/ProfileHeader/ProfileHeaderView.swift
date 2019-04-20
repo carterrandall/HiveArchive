@@ -12,7 +12,7 @@ protocol ProfileHeaderViewDelegate {
     func editProfile(state: ProfileState)
     func editProfileImage()
     func didChangeFriendStatus(friendStatus: Int, userId: Int)
-    func displayUserActionSheet()
+    func displayUserActionSheet(friends: Bool, sharingLocation: Bool)
 }
 
 enum ProfileState {
@@ -155,11 +155,14 @@ class ProfileHeaderView: UIView {
     }()
     
     @objc fileprivate func handleUserAction() {
-        delegate?.displayUserActionSheet()
+        print(self.user?.sharingLocation)
+        if let sharingLocation = self.user?.sharingLocation, self.profileEditAddButton.friendState == .friends {
+            delegate?.displayUserActionSheet(friends: true, sharingLocation: sharingLocation)
+        }else{
+             delegate?.displayUserActionSheet(friends: false, sharingLocation: false)
+        }
     }
 
-
-   
     fileprivate func setupViews() {
         
         addSubview(backgroundImageView)
