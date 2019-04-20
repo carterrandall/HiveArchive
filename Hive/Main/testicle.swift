@@ -32,6 +32,8 @@ class Stupid: UIViewController {
 
 
 
-fileprivate func dosomethingstupid(){
-    print("carter is gay boi")
+    fileprivate func dosomethingstupid(){
+        print("carter is gay boi")
+    }
+    
 }
