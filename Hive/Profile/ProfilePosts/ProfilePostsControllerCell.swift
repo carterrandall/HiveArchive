@@ -105,7 +105,7 @@ class ProfilePostsControllerCell: UICollectionViewCell, UICollectionViewDataSour
             if user.friendStatus == 2 {
                 //print("remove that shit")
             } else if user.friendStatus == 3 {
-                attributedTitle.append(NSAttributedString(string: "\nWhen \(user.username) Accepts your request you will be able to see their posts.", attributes: attributes))
+                attributedTitle.append(NSAttributedString(string: "\nWhen \(user.username) accepts your request you will be able to see their posts.", attributes: attributes))
             }
         }
         
