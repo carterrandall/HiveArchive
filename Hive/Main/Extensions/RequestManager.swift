@@ -57,7 +57,6 @@ class RequestManager {
         if self.currentState == .disconnected || UIApplication.shared.keyWindow?.rootViewController is LoginSignUpMainController {print("disconnected, return"); return }
         if (UserDefaults.standard.isLoggedIn()),let header = UserDefaults.standard.getAuthorizationHeader(), let url = URL(string: MainTabBarController.serverurl + urlString) {
             Alamofire.request(url, method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: header).responseJSON { (data) in
-                if urlString == "Hive/api/paginatePostsOnProfile" { print(data, "DATUM")}
                 if let json = data.result.value as? [String: Any] {
                     DispatchQueue.main.async {
                         completion(json, data.response?.statusCode)
@@ -71,6 +70,7 @@ class RequestManager {
                     }
                 } else {
                     //bad json
+                    print("bad jsonNNNNN", data.result.value)
                     self.checkConnectivityHandleErrors(response: data.response)
                 }
                 

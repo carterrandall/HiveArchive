@@ -12,7 +12,8 @@ protocol ProfileHeaderViewDelegate {
     func editProfile(state: ProfileState)
     func editProfileImage()
     func didChangeFriendStatus(friendStatus: Int, userId: Int)
-    func displayUserActionSheet()
+    func displayUserActionSheet(alertController: UIAlertController)
+    func animatePop(title: String)
 }
 
 enum ProfileState {
@@ -155,7 +156,54 @@ class ProfileHeaderView: UIView {
     }()
     
     @objc fileprivate func handleUserAction() {
-        delegate?.displayUserActionSheet()
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alertController.addAction(UIAlertAction(title: "Block User", style: .destructive, handler: { (_) in
+            DispatchQueue.main.async {
+                self.handleBlock()
+            }
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "Report User", style: .destructive, handler: { (_) in
+            DispatchQueue.main.async {
+                self.handleReport()
+            }
+        }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+    
+        delegate?.displayUserActionSheet(alertController: alertController)
+    }
+    
+    fileprivate func handleBlock() {
+        print("blocked")
+        guard let id = self.user?.uid else { return }
+        MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/blockUserWithId", params: ["blockId": id]) { (response) in
+            if response.response?.statusCode == 200 {
+                print("blocked user with uid =", id)
+                if let username = self.user?.username {
+                    self.delegate?.animatePop(title: "Blocked \(username)")
+                } else {
+                    self.delegate?.animatePop(title: "Blocked User")
+                   
+                }
+            }
+        }
+        
+    }
+    
+    fileprivate func handleReport() {
+        print("reported")
+        guard let id = self.user?.uid else { return }
+        MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/reportUserWithId", params: ["UID": id]) { (response) in
+            if response.response?.statusCode == 200 {
+                print("blocked user with uid =", id)
+                if let username = self.user?.username {
+                    self.delegate?.animatePop(title: "Reported \(username)")
+
+                } else {
+                    self.delegate?.animatePop(title: "Reported User")
+                }
+            }
+        }
     }
 
 

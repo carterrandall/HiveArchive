@@ -33,6 +33,9 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
     
     var delegate: PhotoSelectionControllerDelegate?
     
+    var isFromCamera: Bool = false
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -52,12 +55,14 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
         
     }
     
+    var shouldUpdateAssets: Bool = true
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        updateCachedAssets()
-        selectedAsset = fetchResult.object(at: 0)
-        collectionView.reloadData()
+        if shouldUpdateAssets {
+            updateCachedAssets()
+            selectedAsset = fetchResult.object(at: 0)
+            collectionView.reloadData()
+        }
     }
     
     fileprivate func updateCachedAssets() {
@@ -124,15 +129,28 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
 
     fileprivate func setupNavigationButtons() {
         
-        navigationController?.navigationBar.barTintColor = .black
+        
         navigationController?.navigationBar.shadowImage = UIImage()
         let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(handleCancel))
-        cancelButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         
-        navigationItem.leftBarButtonItem = cancelButton
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(handleDone))
-        navigationItem.rightBarButtonItem = doneButton
-        
+        if self.isFromCamera {
+            navigationController?.makeTransparent()
+            let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+            view.addSubview(blurView)
+            blurView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+            
+            navigationItem.leftBarButtonItem = cancelButton
+            let nextButton = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(handleDone))
+            navigationItem.rightBarButtonItem = nextButton
+            nextButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black], for: .normal)
+            cancelButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black], for: .normal)
+        } else {
+            navigationController?.navigationBar.barTintColor = .black
+            navigationItem.leftBarButtonItem = cancelButton
+            let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(handleDone))
+            navigationItem.rightBarButtonItem = doneButton
+            cancelButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
+        }
 
     }
     
@@ -147,31 +165,48 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
     }
     
     @objc func handleDone() {
-        print("Getting Image")
         
         guard let photoImageView = header?.photoImageView else { return }
         guard let image = photoImageView.image else { return }
         guard let scrollView = header?.scrollView else { return }
         
-        
-         //crop image wierd stuff going on if you zoom in 
         let scale:CGFloat = 1/scrollView.zoomScale
         let x:CGFloat = scrollView.contentOffset.x * scale
         let y:CGFloat = scrollView.contentOffset.y * scale
         let width:CGFloat = scrollView.frame.size.width * scale
         let height:CGFloat = scrollView.frame.size.height * scale
+        
+        
         if let croppedCGImage = image.cgImage?.cropping(to: CGRect(x: x, y: y, width: width, height: height)) {
             let croppedImage = UIImage(cgImage: croppedCGImage)
-                
-            delegate?.didSelectPhoto(image: croppedImage)
+            print("need to end session somehow after sharing, probably just a double delegate")
+            if isFromCamera {
+                self.presentPreviewPhotoController(image: croppedImage)
+            } else {
+                delegate?.didSelectPhoto(image: croppedImage)
+                self.dismiss(animated: true, completion: nil)
+            }
+            
         } else {
-            delegate?.didSelectPhoto(image: image)
+            if isFromCamera {
+                self.presentPreviewPhotoController(image: image)
+            } else {
+                delegate?.didSelectPhoto(image: image)
+                self.dismiss(animated: true, completion: nil)
+            }
+            
         }
-        self.dismiss(animated: true, completion: nil)
+        
     }
     
-   
-
+    fileprivate func presentPreviewPhotoController(image: UIImage) {
+        self.shouldUpdateAssets = false
+        let previewPhotoController = PreviewPhotoController()
+        previewPhotoController.image = image
+        previewPhotoController.isFromCameraRoll = self.isFromCamera
+        self.navigationController?.pushViewController(previewPhotoController, animated: true)
+    }
+    
     var header: PhotoSelectionHeader?
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -180,12 +215,14 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
         
         self.header = header
         
+        header.isFromCamera = self.isFromCamera
+        
         if let selectedAsset = selectedAsset {
             
             let selectedIndex = fetchResult.index(of: selectedAsset)
             let selectedAsset = fetchResult.object(at: selectedIndex)
             let imageManager = PHImageManager.default()
-            let largerTargetSize = CGSize(width: 1000, height: 1000)
+            let largerTargetSize = CGSize(width: 1000, height: (isFromCamera ? (1000 * (4/3)) : 1000))
             imageManager.requestImage(for: selectedAsset, targetSize: largerTargetSize, contentMode: .aspectFit, options: nil) { (image, info) in
                 
                     header.image = image
@@ -198,7 +235,11 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let width = view.frame.width
-        return CGSize(width: width, height: width)
+        if isFromCamera {
+            return CGSize(width: width, height: width * (4/3))
+        } else {
+            return CGSize(width: width, height: width)
+        }
     }
     
     var selectedImage: UIImage?
@@ -237,14 +278,16 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
             
         }
         
-       
-        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (view.frame.width - 3) / 4
-        return CGSize(width: width, height: width)
+        if self.isFromCamera {
+            return CGSize(width: width, height: width * 4/3)
+        } else {
+            return CGSize(width: width, height: width)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {

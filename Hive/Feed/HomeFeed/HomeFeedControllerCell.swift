@@ -180,6 +180,8 @@ class HomeFeedControllerCell: UICollectionViewCell, UICollectionViewDataSource, 
             }
         } else if self.posts.count == 0 {
             self.showNoPostsDisplay()
+        } else if new {
+            self.collectionView.reloadData()
         }
     }
     

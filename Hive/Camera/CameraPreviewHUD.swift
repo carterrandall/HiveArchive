@@ -61,7 +61,7 @@ class CameraPreviewHUD: UIView {
         delegate?.handleShare()
         shareButton.isEnabled = false
     }
-    
+
     var toolBarStackView: UIStackView!
     override init(frame: CGRect) {
         super.init(frame: frame)

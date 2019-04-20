@@ -316,7 +316,7 @@ extension UIViewController {
             self.view.addSubview(backgroundView)
             let savedLabel = UILabel()
             savedLabel.text = title
-            savedLabel.font = UIFont.boldSystemFont(ofSize: 18)
+            savedLabel.font = UIFont.systemFont(ofSize: 18)
             savedLabel.textColor = .black
             savedLabel.textAlignment = .center
             savedLabel.numberOfLines = 0

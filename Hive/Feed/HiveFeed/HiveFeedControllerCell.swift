@@ -178,6 +178,9 @@ class HiveFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UI
             
         } else if self.posts.count == 0 {
             self.showNoPostsDisplay()
+        } else if new {
+            //refresh
+            self.collectionView.reloadData()
         }
     }
     

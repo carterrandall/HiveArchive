@@ -129,6 +129,30 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         return button
     }()
     
+    let cameraRollButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(handleCameraRoll), for: .touchUpInside)
+        button.setImage(UIImage(named: "cameraRoll"), for: .normal)
+        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+        button.tintColor = UIColor.white
+        return button
+    }()
+    
+    @objc fileprivate func handleCameraRoll () {
+        print("remeber permissions here")
+        let layout = UICollectionViewFlowLayout()
+        let photoSelectionController = PhotoSelectionController(collectionViewLayout: layout)
+        photoSelectionController.isFromCamera = true
+        //photoSelectionController.delegate = self
+        let photoSelectionNavController = UINavigationController(rootViewController: photoSelectionController)
+        self.present(photoSelectionNavController, animated: true, completion: nil)
+    }
+    
+    let filterButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.isUserInteractionEnabled = false
+        return button
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -144,7 +168,6 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         self.setupCaptureSession()
         
         setupHUD()
-        
         
     }
     
@@ -166,11 +189,6 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     
     var centerView: UIView!
     fileprivate func setupHUD() {
-        
-        //        let imageView = UIImageView(image: UIImage(named: "indian"))
-        //        imageView.contentMode = .scaleAspectFill
-        //        imageView.frame = view.bounds
-        //        view.addSubview(imageView)
         
         self.navigationController?.makeTransparent()
         let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]
@@ -209,15 +227,21 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         hiveCameraButton.centerYAnchor.constraint(equalTo: bottomView.centerYAnchor).isActive = true
         hiveCameraButton.layer.cornerRadius = buttonDim / 2
         
-        view.addSubview(torchButton)
-        torchButton.anchor(top: nil, left: nil, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 40, width: 40, height: 40)
-        torchButton.centerYAnchor.constraint(equalTo: hiveCameraButton.centerYAnchor).isActive = true
+        let rightStackView = UIStackView(arrangedSubviews: [cameraRollButton, torchButton])
+        rightStackView.axis = .horizontal
+        rightStackView.distribution = .fillEqually
+        view.addSubview(rightStackView)
+        rightStackView.anchor(top: nil, left: hiveCameraButton.rightAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 20, width: 0, height: 40)
+        rightStackView.centerYAnchor.constraint(equalTo: hiveCameraButton.centerYAnchor).isActive = true
+
         
-        view.addSubview(switchCameraButton)
-        switchCameraButton.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 40, paddingBottom: 0, paddingRight: 0, width: 40, height: 40)
-        switchCameraButton.centerYAnchor.constraint(equalTo: hiveCameraButton.centerYAnchor).isActive = true
-        
-        
+        let leftStackView = UIStackView(arrangedSubviews: [switchCameraButton, filterButton])
+        leftStackView.axis = .horizontal
+        leftStackView.distribution = .fillEqually
+        view.addSubview(leftStackView)
+        leftStackView.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: hiveCameraButton.leftAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 20, width: 0, height: 40)
+        leftStackView.centerYAnchor.constraint(equalTo: hiveCameraButton.centerYAnchor).isActive = true
+
     }
     
     @objc fileprivate func handleToggleTorch() {
@@ -245,7 +269,6 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     }
     
     @objc fileprivate func handleDismiss() {
-        
         self.dismiss(animated: true) {
             self.endSession()
         }

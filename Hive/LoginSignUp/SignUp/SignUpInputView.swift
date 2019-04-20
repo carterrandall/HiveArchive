@@ -136,6 +136,8 @@ class SignUpInputView: UIView, phoneValidatorDelegate, UITextFieldDelegate {
         case .restricted:
             result = false
             completion(result)
+        @unknown default:
+            completion(false)
         }
     }
     
@@ -314,10 +316,11 @@ class SignUpInputView: UIView, phoneValidatorDelegate, UITextFieldDelegate {
     }
     
     func isValidEmail(testStr:String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailTest.evaluate(with: testStr)
+        return emailTest.evaluate(with: testStr.trimmingCharacters(in: .whitespacesAndNewlines))
+        
     }
     
     func checkIfEmailIsUnique(email: String, completion: @escaping(Bool) -> ()) {
