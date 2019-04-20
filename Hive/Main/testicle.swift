@@ -29,4 +29,9 @@ class Stupid: UIViewController {
     func anotherstupidfunctionorsomething() {
         print("playboy girls are so much sexy")
     }
+
+
+
+fileprivate func dosomethingstupid(){
+    print("carter is gay boi")
 }
