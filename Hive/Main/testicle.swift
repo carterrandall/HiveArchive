@@ -7,3 +7,10 @@
 //
 
 import UIKit
+
+
+
+
+fileprivate func dosomethingstupid(){
+    print("carter is gay boi")
+}
