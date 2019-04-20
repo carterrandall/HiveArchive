@@ -36,4 +36,9 @@ class Stupid: UIViewController {
         print("carter is gay boi")
     }
     
+fileprivate func dosomethingstupid(){
+    print("carter is gay boi")
+}
+fileprivate func mergeourfiles(){
+    print("u are aids")
 }
