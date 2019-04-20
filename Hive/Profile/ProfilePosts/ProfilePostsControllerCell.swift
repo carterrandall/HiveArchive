@@ -74,7 +74,7 @@ class ProfilePostsControllerCell: UICollectionViewCell, UICollectionViewDataSour
                         privateButton.isEnabled = false
                         privateButton.setAttributedTitle(attributedTitle, for: .disabled)
                     } else if user.friendStatus == 2 {
-                        attributedTitle.append(NSAttributedString(string: "\nAccept \(user.username) their friend request to see their posts.", attributes: attributes))
+                        attributedTitle.append(NSAttributedString(string: "\nAccept \(user.username)'s friend request to see their posts.", attributes: attributes))
                         privateButton.setAttributedTitle(attributedTitle, for: .normal)
                     } else if user.friendStatus == 3 {
                         attributedTitle.append(NSAttributedString(string: "\nSend \(user.username) a friend request to see their posts.", attributes: attributes))
