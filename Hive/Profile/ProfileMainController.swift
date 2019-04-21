@@ -331,6 +331,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
         } else {
             self.menuBar.friendCount = user.friends
             self.menuBar.postCount = user.postcount
+            self.headerView.user?.sharingLocation = user.sharingLocation
         }
         self.headerView.checkIfShouldShowIndicatorView()
     }
