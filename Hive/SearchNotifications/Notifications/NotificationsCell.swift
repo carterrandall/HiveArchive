@@ -60,6 +60,25 @@ class NotificationsCell: UITableViewCell {
                 
                 attributedString.append(NSAttributedString(string: " accepted your friend request.", attributes: attributes))
                 
+            case 4:
+                textLabelToPostLeftAnchor.isActive = true
+                textLabelToRightAnchor.isActive = false
+                postView.isHidden = false
+                
+                attributedString.append(NSAttributedString(string: " tagged you in a comment: '\(notification.message)'." , attributes: attributes))
+                
+                if let post = notification.post {
+                    postView.postImageCache(url: post.imageUrl, postId: post.id)
+                }
+            case 5:
+                textLabelToPostLeftAnchor.isActive = true
+                textLabelToRightAnchor.isActive = false
+                postView.isHidden = false
+                attributedString.append(NSAttributedString(string: " tagged you in a post.", attributes: attributes))
+                if let post = notification.post {
+                    postView.postImageCache(url: post.imageUrl, postId: post.id)
+                }
+                
             default:
                 break
             }
