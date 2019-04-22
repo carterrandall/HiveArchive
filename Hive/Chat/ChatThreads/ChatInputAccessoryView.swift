@@ -106,8 +106,7 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
                 self.textViewHeightAnchor.constant = contentSize.height
                 
             }
-            
-            
+
             if height != currentTextViewHeight {
                 previousTextViewHeight = currentTextViewHeight
                 currentTextViewHeight = height
@@ -174,6 +173,10 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
         
     }
     
+    override var intrinsicContentSize: CGSize {
+        return .zero
+    }
+    
     fileprivate func sendTypingStatus(fid: Int) {
         if shouldSendTypingStatus {
             shouldSendTypingStatus = false
@@ -198,7 +201,6 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
         if text == placeHolderText || text == "" {
             return
         }
-        
         
         delegate?.didSubmit(for: text)
         

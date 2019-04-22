@@ -114,6 +114,10 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
         if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue, let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey]) as? Double, let curve = (notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey]) as? UInt {
             self.keyboardHeight = keyboardFrame.height
             self.containerView.layoutIfNeeded()
+            print(keyboardHeight, "KEYBOARD HEIGHT")
+            if keyboardHeight < 60 {
+                return
+            }
             DispatchQueue.main.async {
                 self.containerViewBottomConstraint.constant = -keyboardFrame.height
                 
@@ -419,6 +423,11 @@ extension CommentsControllerCell: InputAccessoryViewDelegate {
         self.insertRow()
         
         self.delegate?.didCommentOrDelete(increment: 1)
+        
+        self.containerViewHeightContraint.constant = 50
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
         
     }
     

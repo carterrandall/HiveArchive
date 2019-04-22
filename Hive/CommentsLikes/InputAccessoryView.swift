@@ -34,12 +34,20 @@ class InputAccessoryView: UIView, UITextViewDelegate {
     
     func clearTextField() {
         textView.text = nil
-        self.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50)
+        
         if let cheight = self.contentHeight {
             textView.contentSize.height = cheight
         }
         if self.textViewHeightAnchor != nil {
-            self.textViewHeightAnchor.constant = textView.contentSize.height
+            self.textViewHeightAnchor.constant = 50
+//            UIView.animate(withDuration: 0.0, animations: {
+//                self.layoutIfNeeded()
+//            }) { (_) in
+//                self.textViewHeightAnchor.isActive = false
+//                self.textViewHeightAnchor = nil
+//                self.textView.isScrollEnabled = false
+//            }
+            
         }
         
         self.textView.sizeToFit()
@@ -178,7 +186,7 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         
         autoresizingMask = .flexibleHeight
 
-        backgroundColor = .clear
+        backgroundColor = .red
         
         textView.delegate = self
         
@@ -215,11 +223,19 @@ class InputAccessoryView: UIView, UITextViewDelegate {
     }
     
     @objc func handleSend() {
+        
         let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         if text == placeHolderText || text == "" {
             return
         }
-        delegate?.didSubmit(for: text, taggedUids: Array(Set(self.tagCollectionView.selectedIdToUserDict.values)))
+        
+        var taggedUids = [Int]()
+        if self.tagCollectionView.selectedIdToUserDict.values.count > 0 {
+            taggedUids = Array(Set(self.tagCollectionView.selectedIdToUserDict.values))
+        }
+        delegate?.didSubmit(for: text, taggedUids: taggedUids)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
