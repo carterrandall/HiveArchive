@@ -181,9 +181,7 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
                 switch encodingResult {
                 case .success(let upload, _, _):
                     upload.response(completionHandler: { (response) in
-                        
                         NotificationCenter.default.post(name: PreviewPhotoController.updateForNewPostNotificationName, object: nil)
-                        
                         if MapRender.profileCache.object(forKey: "CachedProfile")  == nil {
                             if let postCount = MainTabBarController.currentUser?.postcount {
                                 MainTabBarController.currentUser?.postcount = postCount + 1
