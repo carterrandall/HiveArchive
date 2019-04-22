@@ -40,19 +40,16 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         }
         
         if self.textViewHeightAnchor != nil {
-            self.textViewHeightAnchor.constant = 34
-            UIView.animate(withDuration: 0.0, animations: {
-                self.layoutIfNeeded()
-            }) { (_) in
-                self.textView.isScrollEnabled = false
-            }
+            self.textViewHeightAnchor.constant = textView.contentSize.height
+            
         }
+        
+        self.reloadInputViews()
+        
         self.currentTextViewHeight = 0.0
         self.previousTextViewHeight = 0.0
-        self.textView.sizeToFit()
-        self.reloadInputViews()
+        self.additionalTextViewHeight = 0.0
        
-        
     }
     
     let sendButton: UIButton = {
@@ -98,6 +95,8 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         } else {
              textView.text = text + (text.last == " " ? "@" : " @")
         }
+        
+        editingLook()
         
         self.updateOnTextViewChange()
         
@@ -159,14 +158,15 @@ class InputAccessoryView: UIView, UITextViewDelegate {
                 
                 delegate?.updateTableViewForText(additionalTextViewHeight: currentTextViewHeight - previousTextViewHeight)
                 
-            } else if previousTextViewHeight == 0.0 {
-                print("FUCK")
-                delegate?.updateTableViewForText(additionalTextViewHeight: 0)
             }
         }
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
+       editingLook()
+    }
+    
+    func editingLook() {
         if textView.textColor == .lightGray {
             textView.text = nil
             textView.textColor = .black
@@ -179,7 +179,6 @@ class InputAccessoryView: UIView, UITextViewDelegate {
             textView.text = placeHolderText
             textView.textColor = .lightGray
             self.textView.reloadInputViews()
-            self.textView.sizeToFit()
         }
     }
     
@@ -187,14 +186,14 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         self.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 12).isActive = true
     }
     
-   // override var intrinsicContentSize: CGSize { return .zero }
+    override var intrinsicContentSize: CGSize { return .zero }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         autoresizingMask = .flexibleHeight
 
-        backgroundColor = .red
+        backgroundColor = .clear
         
         textView.delegate = self
         
@@ -243,6 +242,8 @@ class InputAccessoryView: UIView, UITextViewDelegate {
             if tagCollectionView.selectedIdToUserDict.values.count > 0 {
                 let taggedUids = Array(Set(tagCollectionView.selectedIdToUserDict.values))
                 delegate?.didSubmit(for: text, taggedUids: taggedUids)
+                self.tagCollectionView.selectedIdToUserDict.removeAll()
+                self.tagCollectionView.reloadData()
             } else {
                 delegate?.didSubmit(for: text, taggedUids: [])
             }
@@ -278,7 +279,6 @@ extension InputAccessoryView: TagCollectionViewDelegate {
         var text = textView.text.replacingOccurrences(of: "@\(username)", with: "")
         text = text.replacingOccurrences(of: "  @", with: " @")
         textView.text = text
-        
     }
     
     func updateText(text: String) {
@@ -286,7 +286,7 @@ extension InputAccessoryView: TagCollectionViewDelegate {
     }
     
     func endTagging() {
-        guard tagCollectionView != nil else { return }
+        guard tagCollectionView != nil && self.isTagging else { return }
         DispatchQueue.main.async {
             self.isTagging = false
             self.delegate?.tag(add: false)
@@ -300,6 +300,7 @@ extension InputAccessoryView: TagCollectionViewDelegate {
     }
     
     func startTagging() {
+        if self.isTagging { return }
         self.isTagging = true
         if tagCollectionView == nil {
             DispatchQueue.main.async {

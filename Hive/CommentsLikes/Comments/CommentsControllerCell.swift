@@ -398,7 +398,6 @@ extension CommentsControllerCell: InputAccessoryViewDelegate {
             UIView.animate(withDuration: 0.0) {
                 self.layoutIfNeeded()
             }
-            
         }
     }
     

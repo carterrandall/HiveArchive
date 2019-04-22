@@ -67,6 +67,7 @@ class CaptionView: UIView, UITextViewDelegate {
         return button
     }()
     
+    
     @objc func handleWOB() {
         blackView.backgroundColor = .black
         textView.tintColor = .white

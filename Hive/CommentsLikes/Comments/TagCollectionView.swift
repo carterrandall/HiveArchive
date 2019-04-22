@@ -27,7 +27,7 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
         super.init(frame: frame, collectionViewLayout: layout)
         
         register(TagCell.self, forCellWithReuseIdentifier: tagCellId)
-        
+    
         backgroundColor = .clear
         alwaysBounceHorizontal = true
         showsHorizontalScrollIndicator = false
