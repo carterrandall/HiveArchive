@@ -308,6 +308,11 @@ class ChatController: UITableViewController, ChatInputAccessoryViewDelegate, Cha
             
         }
         
+        self.containerViewHeight.constant = 50
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+        
         self.containerView.clearTextField()
         
     }
@@ -388,6 +393,7 @@ class ChatController: UITableViewController, ChatInputAccessoryViewDelegate, Cha
             
         }
         
+        print("adjusting", additionalTextViewHeight)
         self.containerViewHeight.constant += additionalTextViewHeight
         UIView.animate(withDuration: 0.0) {
             self.view.layoutIfNeeded()
