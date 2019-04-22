@@ -230,7 +230,6 @@ class ProfileHeaderView: UIView {
     }
     
     
-   
     fileprivate func setupEditAddButton() {
         
         guard let currentLoggedInUserId = MainTabBarController.currentUser?.uid else {return}
@@ -274,7 +273,7 @@ extension ProfileHeaderView: ProfileEditAddButtonDelegate {
         
         delegate?.editProfile(state: profileState)
       
-        
+    
     }
     
     fileprivate func setupEditPhotoButton() {

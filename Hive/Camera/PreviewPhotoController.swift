@@ -27,7 +27,6 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     var image: UIImage! {
         didSet {
             self.previewImageView.image = image
-           // self.previewImageView.image = UIImage(named: "indian")
         }
     }
     
@@ -173,15 +172,21 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
             
             Alamofire.upload(multipartFormData: { (multipart) in
                 multipart.append(uploadData, withName: "file", fileName: "\(filename).jpg", mimeType: "image/jpeg")
-                
-                
-                
+                if self.captionView.taggedIds.count > 0 {
+                    let tags = self.captionView.taggedIds
+                    if let tdata = "\(tags)".data(using: .utf8) {
+                        multipart.append(tdata, withName: "taggedUsers")
+                    }
+                }
+             
             }, usingThreshold: UInt64.init(), to: url, method: .post, headers: header) { (encodingResult) in
                 
                 switch encodingResult {
                 case .success(let upload, _, _):
                     upload.response(completionHandler: { (response) in
+                        
                         NotificationCenter.default.post(name: PreviewPhotoController.updateForNewPostNotificationName, object: nil)
+                        
                         if MapRender.profileCache.object(forKey: "CachedProfile")  == nil {
                             if let postCount = MainTabBarController.currentUser?.postcount {
                                 MainTabBarController.currentUser?.postcount = postCount + 1

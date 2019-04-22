@@ -306,14 +306,17 @@ class ChatController: UITableViewController, ChatInputAccessoryViewDelegate, Cha
             //send to server n stuff
             self.updateMessagesAfterSending(serverParams: serverParams, message: message, dayCount: dayCount, day: day)
             
+            self.containerViewHeight.constant = 50
+            UIView.animate(withDuration: 0.0) {
+                self.view.layoutIfNeeded()
+            }
+            
+            self.containerView.clearTextField()
+            
         }
         
-        self.containerViewHeight.constant = 50
-        UIView.animate(withDuration: 0.2) {
-            self.view.layoutIfNeeded()
-        }
         
-        self.containerView.clearTextField()
+        
         
     }
     

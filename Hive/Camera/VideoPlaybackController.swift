@@ -405,6 +405,12 @@ extension VideoPlaybackController: CameraPreviewHUDDelegate {
                 Alamofire.upload(multipartFormData: { (multipart) in
                     multipart.append(videoData, withName: "file", fileName: "\(filename).mov", mimeType: "video/quicktime")
                     multipart.append(imageData, withName: "file", fileName: "\(filename).jpg", mimeType: "image/jpeg")
+                    if self.captionView.taggedIds.count > 0 {
+                        let tags = self.captionView.taggedIds
+                        if let tdata = "\(tags)".data(using: .utf8) {
+                            multipart.append(tdata, withName: "taggedUsers")
+                        }
+                    }
                 }, usingThreshold: UInt64.init(), to: url, method: .post, headers: header) { (encodingResult) in
                     switch encodingResult {
                     case .success(let upload, _, _):

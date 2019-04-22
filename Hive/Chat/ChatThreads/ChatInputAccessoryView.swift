@@ -33,15 +33,18 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
     
     func clearTextField() {
         self.textView.text = nil
-        self.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50)
         if let cheight = self.contentHeight {
             textView.contentSize.height = cheight
         }
         if self.textViewHeightAnchor != nil {
             self.textViewHeightAnchor.constant = textView.contentSize.height
         }
-        self.textView.sizeToFit()
+
         self.reloadInputViews()
+        
+        self.currentTextViewHeight = 0.0
+        self.previousTextViewHeight = 0.0
+        self.additionalTextViewHeight = 0.0
     }
     
     let sendButton: UIButton = {
@@ -124,7 +127,6 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
             textView.text = nil
             textView.textColor = .black
         }
-        
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -132,6 +134,7 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
         if textView.text.isEmpty {
             textView.text = placeHolderText
             textView.textColor = .lightGray
+            self.reloadInputViews()
             
         }
     }
@@ -146,7 +149,7 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
         
         autoresizingMask = .flexibleHeight
         
-        backgroundColor = .red
+        backgroundColor = .clear
         
         textView.delegate = self
         

@@ -8,7 +8,12 @@
 
 import UIKit
 
-class ChooseFriendsController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class ChooseFriendsController: UICollectionViewController, UICollectionViewDelegateFlowLayout, ChooseFriendCellDelegate {
+    
+    func handleShow(cell: ChooseFriendCell) {
+        guard let indexPath = self.collectionView.indexPath(for: cell) else { return }
+        self.didSelectCell(indexPath: indexPath)
+    }
     
     fileprivate let friendCellId = "friendCellId"
     override func viewDidLoad() {
@@ -60,7 +65,7 @@ class ChooseFriendsController: UICollectionViewController, UICollectionViewDeleg
         json.count < 10 ? (self.isFinishedPaging = true) : (self.isFinishedPaging = false)
         if json.count > 0 {
             json.forEach({ (snapshot) in
-               
+               print(snapshot, "snapshot")
                 let friend = User(dictionary: snapshot)
                 if !uids.contains(friend.uid) {
                     self.uids.append(friend.uid)
@@ -84,16 +89,34 @@ class ChooseFriendsController: UICollectionViewController, UICollectionViewDeleg
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        didSelectCell(indexPath: indexPath)
+    }
+    
+    fileprivate func didSelectCell(indexPath: IndexPath) {
         var friend = friends[indexPath.item]
         if let sharing = friend.sharingLocation {
             friend.sharingLocation = !sharing
-            self.updateSharingWithUser(id: friend.uid)
+            self.updateSharingWithUser(id: friend.uid, sharing: !sharing)
             self.friends[indexPath.item] = friend
             self.collectionView.reloadData()
         }
     }
     
-    fileprivate func updateSharingWithUser(id: Int) {
+    fileprivate func updateSharingWithUser(id: Int, sharing: Bool) {
+        if sharing {
+            MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/startSharingLocationWithUser", params: ["UID":id]) { (response) in
+                if response.response?.statusCode == 200 {
+                    print("started sharing")
+                }
+            }
+        } else {
+            MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/stopSharingLocationWithUser", params: ["UID":id]) { (response) in
+                if response.response?.statusCode == 200 {
+                    print("stoped sharing")
+                }
+            }
+        }
+        
         
     }
     
@@ -107,7 +130,7 @@ class ChooseFriendsController: UICollectionViewController, UICollectionViewDeleg
         if indexPath.item == self.friends.count - 1 && !isFinishedPaging {
             self.paginateFriends()
         }
-        
+        cell.delegate = self
         cell.user = friends[indexPath.item]
         return cell
     }

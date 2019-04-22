@@ -10,6 +10,12 @@ class CaptionView: UIView, UITextViewDelegate {
     
     fileprivate var isKeyboardUp: Bool = false
     
+    var isTagging: Bool = false
+    
+    var tagCollectionView: TagCollectionView!
+    
+    var taggedIds = [Int]()
+    
     let screenHeight = UIScreen.main.bounds.height
     let screenWidth = UIScreen.main.bounds.width
     
@@ -50,8 +56,10 @@ class CaptionView: UIView, UITextViewDelegate {
         button.setTitleColor(UIColor.white, for: .normal)
         button.backgroundColor = UIColor.black
         button.addTarget(self, action: #selector(handleWOB), for: .touchUpInside)
-        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
-        button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 17
         return button
     }()
     
@@ -61,17 +69,60 @@ class CaptionView: UIView, UITextViewDelegate {
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.setTitleColor(UIColor.black, for: .normal)
         button.backgroundColor = UIColor.white
+        button.layer.cornerRadius = 17
         button.addTarget(self, action: #selector(handleBOW), for: .touchUpInside)
-        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
-        button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        button.layer.borderColor = UIColor.clear.cgColor
+        button.layer.borderWidth = 1
         return button
     }()
+    
+    let tagButtonView: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("@", for: .normal)
+        button.setTitleColor(UIColor.mainRed(), for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20)
+        button.layer.borderColor = UIColor.mainRed().cgColor
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 17
+        button.backgroundColor = .white
+        button.addTarget(self, action: #selector(handleTag), for: .touchUpInside)
+    
+        button.layer.borderWidth = 1
+        return button
+    }()
+    
+    @objc fileprivate func handleTag() {
+        print("handling tag")
+        
+        if self.isTagging { return }
+        
+        guard let text = textView.text else { return }
+        if text.count == 0 {
+            textView.text = "@"
+        } else {
+            textView.text = text + (text.last == " " ? "@" : " @")
+        }
+        
+        
+        self.sizeInEditingMode()
+        
+        self.startTagging()
+        
+    }
+    
     
     @objc func handleWOB() {
         blackView.backgroundColor = .black
         textView.tintColor = .white
         self.changeAttributes(attributes: [.foregroundColor: UIColor.white, .backgroundColor: UIColor.black, .font: UIFont.systemFont(ofSize: 20), .baselineOffset: 7, .paragraphStyle: self.paraStyle])
         textView.setShadow(offset: CGSize(width: 10, height: 0), opacity: 1, radius: 0, color: UIColor.black)
+        
+        blackOnWhiteButtonView.layer.borderColor = UIColor.clear.cgColor
+        blackOnWhiteButtonView.layer.borderWidth = 1
+        
+        whiteOnBlackButtonView.layer.borderColor = UIColor.mainRed().cgColor
+        whiteOnBlackButtonView.layer.borderWidth = 1
         
     }
     
@@ -80,6 +131,12 @@ class CaptionView: UIView, UITextViewDelegate {
         blackView.backgroundColor = .white
         self.changeAttributes(attributes: [.foregroundColor: UIColor.black, .backgroundColor: UIColor.white, .font: UIFont.systemFont(ofSize: 20), .baselineOffset: 7, .paragraphStyle: self.paraStyle])
         textView.setShadow(offset: CGSize(width: 10, height: 0), opacity: 1, radius: 0, color: UIColor.white)
+        
+        whiteOnBlackButtonView.layer.borderColor = UIColor.clear.cgColor
+        whiteOnBlackButtonView.layer.borderWidth = 1
+        
+        blackOnWhiteButtonView.layer.borderColor = UIColor.mainRed().cgColor
+        blackOnWhiteButtonView.layer.borderWidth = 1
     }
     
     var currentAttributes: [NSAttributedString.Key: Any]?
@@ -118,8 +175,22 @@ class CaptionView: UIView, UITextViewDelegate {
     var previousEditingHeight: CGFloat = 0.0
     func textViewDidChange(_ textView: UITextView) {
         
+        if self.tagCollectionView != nil {
+            self.tagCollectionView.textDidChange(searchText: textView.text, tagging: self.isTagging)
+        }
+        
+        if isTagging && textView.text.last == " " {
+            self.endTagging()
+        } else if isTagging && textView.text.count == 0 {
+            self.endTagging()
+        }
+        
         self.sizeInEditingMode()
         
+        checkDidAddCaption()
+    }
+    
+    func checkDidAddCaption() {
         let text = textView.text
         if text == "" || text == nil {
             delegate?.didAddCaption(isText: false)
@@ -129,6 +200,7 @@ class CaptionView: UIView, UITextViewDelegate {
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
+        self.endTagging()
         print("did end eiditng")
         if textView.text == "" { self.blackView.isHidden = true }
         if let prevRect = previousTextFieldRect, let editingRect = self.editingFrame {
@@ -195,23 +267,21 @@ class CaptionView: UIView, UITextViewDelegate {
             return
         }
         
-        let w = (UIScreen.main.bounds.width / 2)
         toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 40))
-        toolBar.barStyle = UIBarStyle.blackOpaque
-        
+        toolBar.barStyle = UIBarStyle.default
+  
         let whiteOnBlackButton = UIBarButtonItem(customView: whiteOnBlackButtonView)
-        whiteOnBlackButton.customView?.translatesAutoresizingMaskIntoConstraints = false
-        whiteOnBlackButton.customView?.widthAnchor.constraint(equalToConstant: w).isActive = true
-        
+
         let blackOnWhiteButton = UIBarButtonItem(customView: blackOnWhiteButtonView)
-        blackOnWhiteButton.customView?.translatesAutoresizingMaskIntoConstraints = false
-        blackOnWhiteButton.customView?.widthAnchor.constraint(equalToConstant: w).isActive = true
+
+        let tagButton = UIBarButtonItem(customView: tagButtonView)
+        tagButton.customView?.translatesAutoresizingMaskIntoConstraints = false
+        tagButton.customView?.widthAnchor.constraint(equalToConstant: 36).isActive = true
         
-        let negativeSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.fixedSpace, target: nil, action: nil)
-        negativeSpace.width = -toolBar.layoutMargins.left
-        let negativeSpaceRight: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.fixedSpace, target: nil, action: nil)
-        negativeSpaceRight.width = -toolBar.layoutMargins.right
-        toolBar.items = [negativeSpace, whiteOnBlackButton, blackOnWhiteButton, negativeSpaceRight]
+        let positiveSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        
+        toolBar.items = [positiveSpace,tagButton,positiveSpace, whiteOnBlackButton, positiveSpace,blackOnWhiteButton, positiveSpace]
+        
         
         textView.inputAccessoryView = toolBar
         
@@ -226,10 +296,7 @@ class CaptionView: UIView, UITextViewDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        addGestureRecognizer(tapGesture)
-        
+
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(pan:)))
         textView.addGestureRecognizer(panGesture)
         
@@ -271,17 +338,6 @@ class CaptionView: UIView, UITextViewDelegate {
         pan.setTranslation(CGPoint.zero, in: self)
     }
     
-    
-    
-    
-    @objc func handleTap() {
-        if textView.isFirstResponder {
-            self.endEditing(true)
-        } else {
-            self.textView.becomeFirstResponder()
-        }
-    }
-    
     var keyboardHeight: CGFloat!
     @objc fileprivate func keyboardWillAppear(notification: NSNotification) {
         isKeyboardUp = true
@@ -309,12 +365,98 @@ class CaptionView: UIView, UITextViewDelegate {
         self.blackView.frame = CGRect(x: 0, y: rect.minY, width: 40, height: rect.height)
         self.editingFrame = rect
     }
+    
     @objc fileprivate func keyboardWillHide(notification: NSNotification) {
         isKeyboardUp = false
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func startTagging() {
+        if self.isTagging { return }
+        self.isTagging = true
+        if tagCollectionView == nil {
+            DispatchQueue.main.async {
+                self.insertTag(insert: true)
+            }
+            
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .horizontal
+            
+            tagCollectionView = TagCollectionView(frame: .zero, collectionViewLayout: layout)
+            tagCollectionView.tagDelegate = self
+            
+            addSubview(tagCollectionView)
+            tagCollectionView.anchor(top: nil, left: leftAnchor, bottom: textView.topAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 40)
+           
+            
+        } else {
+            
+            self.tagCollectionView.isHidden = false
+            DispatchQueue.main.async {
+                self.insertTag(insert: true)
+            }
+        }
+    }
+    
+    func insertTag(insert: Bool) {
+        print("insert", insert)
+    }
+    
+    
+    func endTagging() {
+        guard tagCollectionView != nil && self.isTagging else { return }
+        DispatchQueue.main.async {
+            self.isTagging = false
+            self.insertTag(insert: false)
+            self.tagCollectionView.isHidden = true
+            self.tagCollectionView.shouldShowSearchedUsers = false
+            self.tagCollectionView.reloadData()
+            UIView.animate(withDuration: 0.0, animations: {
+                self.layoutIfNeeded()
+            })
+        }
+    }
+    
+}
+
+extension CaptionView: TagCollectionViewDelegate {
+   
+    func didSelectName(username: String) {
+        print("did select name")
+        endTagging()
+        
+        guard let index = textView.text.lastIndex(of: "@") else { return }
+        let substring = String(textView.text[...index])
+        let newText = substring + "\(username) "
+        self.textView.text = newText
+        
+        sizeInEditingMode()
+        
+    }
+    
+    func didDeselectName(username: String) {
+        var text = textView.text.replacingOccurrences(of: "@\(username)", with: "")
+        text = text.replacingOccurrences(of: "  @", with: " @")
+        textView.text = text
+        self.sizeInEditingMode()
+    }
+    
+    func updateText(text: String) {
+         self.textView.text = text
+        self.sizeInEditingMode()
+    }
+    
+    func updateTags(ids: [Int]) {
+        self.taggedIds = ids
+        let text = textView.text
+        if text == "" || text == nil {
+            delegate?.didAddCaption(isText: false)
+        } else {
+            delegate?.didAddCaption(isText: true)
+        }
     }
     
 }

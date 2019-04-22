@@ -12,7 +12,14 @@ protocol TagCollectionViewDelegate: class {
     func didSelectName(username: String)
     func didDeselectName(username: String)
     func updateText(text: String)
+    func updateTags(ids: [Int])
     
+}
+
+extension TagCollectionViewDelegate {
+    func updateTags(ids: [Int]) {
+        
+    }
 }
 
 class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -44,7 +51,7 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
         
         self.updateTags(text: searchText)
 
-        if !tagging {print("returning"); return }
+        if !tagging { return }
         
         let queryText = self.pruneString(text: searchText)
         if queryText.count > 0 {
@@ -92,6 +99,7 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
             if !tags.contains(where: { (string) -> Bool in
                 return string.contains(username)
             }) {
+                
                //the username is not contained in our tags. remove it from the username list
                 self.selectedIdToUserDict[username] = nil
             } else {
@@ -192,7 +200,13 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
         fatalError("init(coder:) has not been implemented")
     }
     
-    var selectedIdToUserDict = [String: Int]()
+    var selectedIdToUserDict = [String: Int]() {
+        didSet {
+            if selectedIdToUserDict.values.count > 0 {
+                tagDelegate?.updateTags(ids: Array(Set(selectedIdToUserDict.values)))
+            }
+        }
+    }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         var selectedUser: User!
