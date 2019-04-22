@@ -163,8 +163,6 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
         addSubview(textView)
         textView.anchor(top: nil, left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: rightAnchor, paddingTop: 8, paddingLeft: 12, paddingBottom: 8, paddingRight: 62, width: 0, height: 0)
         
-        
-        
         addSubview(sendButton)
         sendButton.anchor(top: nil, left: nil, bottom: textView.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: -8, paddingRight: 12, width: 50, height: 50)
         

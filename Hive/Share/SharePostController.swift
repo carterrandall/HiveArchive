@@ -129,6 +129,7 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
                     self.hasSearchedUsers = false
                     self.friends.removeAll()
                     self.filteredFriends.removeAll()
+                    self.searchedUids.removeAll()
                 }
             }
             if !hasSearchedUsers {
@@ -295,6 +296,7 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
     var lastIndex: Int = 0
     var queryText: String?
     var hasSearchedUsers: Bool = false
+    var searchedUids = [Int]()
     fileprivate func paginateSearchedFriends() {
 
         if let queryText = searchBar.text?.lowercased() {
@@ -311,8 +313,16 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
                         
                         if let uid = snapshot["id"] as? Int {
                             let friend = Friend(uid: uid, dictionary: snapshot)
-                            self.friends.append(friend)
+                            if !self.searchedUids.contains(uid) {
+                                self.searchedUids.append(uid)
+                                self.friends.append(friend)
+                            } else {
+                                return
+                            }
+                            
                         }
+                        
+                        
                         self.filteredFriends = self.friends
                         self.collectionView.reloadData()
                         

@@ -119,6 +119,7 @@ class NewChatController: UIViewController, UICollectionViewDelegate, UICollectio
                     self.hasSearchedUsers = false
                     self.searchedUsers.removeAll()
                     self.filteredSearchedUsers.removeAll()
+                    self.searchedUids.removeAll()
                 }
             }
             
@@ -270,6 +271,7 @@ class NewChatController: UIViewController, UICollectionViewDelegate, UICollectio
     var isFinishedPagingSearch: Bool = false
     var lastIndexSearch = 0
     var queryText: String?
+    var searchedUids = [Int]()
     fileprivate func paginateSearchedUsers() {
         print("Paginating searched users")
         self.queryText = stringOfInterest.trimmingCharacters(in: .whitespaces)
@@ -289,7 +291,11 @@ class NewChatController: UIViewController, UICollectionViewDelegate, UICollectio
             if json.count > 0 {
                 json.forEach({ (snapshot) in
                     let user = User(dictionary: snapshot)
-                    self.searchedUsers.append(user)
+                    if !self.searchedUids.contains(user.uid) {
+                        self.searchedUids.append(user.uid)
+                        self.searchedUsers.append(user)
+                    }
+                    
                 })
                 self.filteredSearchedUsers = self.searchedUsers
                 print(self.filteredSearchedUsers.count, "FILTERED COUNT")
