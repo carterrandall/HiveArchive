@@ -220,11 +220,6 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dismissButtonView)
         navigationController?.navigationBar.tintColor = .white
         
-//        let iv = UIImageView(image: UIImage(named: "indian"))
-//        iv.contentMode = .scaleAspectFill
-//        iv.frame = view.bounds
-//        view.addSubview(iv)
-        
         let topView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         view.addSubview(topView)
         topView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
@@ -260,7 +255,7 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         leftStackView.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: hiveCameraButton.leftAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 20, width: 0, height: 40)
         leftStackView.centerYAnchor.constraint(equalTo: hiveCameraButton.centerYAnchor).isActive = true
         
-      //  self.setupCameraRollButton()
+        self.setupCameraRollButton()
     }
     
     fileprivate func setupCameraRollButton() {

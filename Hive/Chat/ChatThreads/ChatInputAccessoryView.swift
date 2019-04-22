@@ -147,7 +147,7 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
         
         autoresizingMask = .flexibleHeight
         
-        backgroundColor = .clear
+        backgroundColor = .red
         
         textView.delegate = self
         
