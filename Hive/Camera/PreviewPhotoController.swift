@@ -175,10 +175,6 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
                 if let captionView = self.captionView {
                     if captionView.taggedIds.count > 0 {
                         let tags = self.captionView.taggedIds
-//                        if let tdata = "\(tags)".data(using: .utf8) {
-//                            multipart.append(tdata, withName: "taggedUsers")
-//                        }
-
                         let arrData = try! JSONSerialization.data(withJSONObject: tags, options: .prettyPrinted)
                         multipart.append(arrData, withName: "taggedUsers")
                     }

@@ -153,7 +153,7 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
                 json.forEach({ (snapshot) in
                     self.friends.append(User(dictionary: snapshot))
                 })
-                
+                print("done pagianting")
                 self.reloadData()
             }
         }
