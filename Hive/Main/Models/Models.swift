@@ -110,6 +110,7 @@ struct User {
         
         let urlString = dictionary["profileImageUrl"] as? String ?? ""
         self.profileImageUrl = URL(string: urlString) ?? URL(string: MainTabBarController.defualtProfileImageUrl)!
+        
         if let notsharingLocation = dictionary["notSharingLocation"] as? Bool {
             self.sharingLocation = !notsharingLocation
         }
