@@ -569,7 +569,7 @@ extension ProfileMainController : ProfileHeaderViewDelegate {
                     } else {
                         self.animatePopup(title: "You have started sharing your location.")
                     }
-                    self.user?.sharingLocation = false
+                    self.user?.sharingLocation = true
                     // ^^^^^^ This is the part where I need you to set this on the user ovject in the thing. 
                     
                     
