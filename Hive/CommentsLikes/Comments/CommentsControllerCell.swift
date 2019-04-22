@@ -83,7 +83,7 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
         
         addSubview(containerView)
         containerView.anchor(top: nil, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
-        containerViewBottomConstraint = containerView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
+        containerViewBottomConstraint = containerView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 0)
         containerViewBottomConstraint.isActive = true
         
         containerViewHeightContraint = containerView.heightAnchor.constraint(equalToConstant: 50)
@@ -115,9 +115,9 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
             self.keyboardHeight = keyboardFrame.height
             self.containerView.layoutIfNeeded()
             print(keyboardHeight, "KEYBOARD HEIGHT")
-            if keyboardHeight < 60 {
-                return
-            }
+//            if keyboardHeight < 60 {
+//                return
+//            }
             DispatchQueue.main.async {
                 self.containerViewBottomConstraint.constant = -keyboardFrame.height
                 
@@ -424,11 +424,6 @@ extension CommentsControllerCell: InputAccessoryViewDelegate {
         
         self.delegate?.didCommentOrDelete(increment: 1)
         
-        self.containerViewHeightContraint.constant = 50
-        UIView.animate(withDuration: 0.2) {
-            self.layoutIfNeeded()
-        }
-        
     }
     
     fileprivate func insertRow() {
@@ -472,6 +467,11 @@ extension CommentsControllerCell: InputAccessoryViewDelegate {
         
         self.containerView.clearTextField()
         self.containerView.textView.resignFirstResponder()
+        self.containerViewHeightContraint.constant = 50
+        self.containerViewBottomConstraint.constant = 0.0
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
         
     }
     

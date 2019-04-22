@@ -44,7 +44,7 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
         
         self.updateTags(text: searchText)
 
-        if !tagging {print("returning"); return }
+        if !tagging { return }
         
         let queryText = self.pruneString(text: searchText)
         if queryText.count > 0 {
@@ -92,6 +92,7 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
             if !tags.contains(where: { (string) -> Bool in
                 return string.contains(username)
             }) {
+                
                //the username is not contained in our tags. remove it from the username list
                 self.selectedIdToUserDict[username] = nil
             } else {

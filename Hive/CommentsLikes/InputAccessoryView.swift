@@ -38,20 +38,21 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         if let cheight = self.contentHeight {
             textView.contentSize.height = cheight
         }
-        if self.textViewHeightAnchor != nil {
-            self.textViewHeightAnchor.constant = 50
-//            UIView.animate(withDuration: 0.0, animations: {
-//                self.layoutIfNeeded()
-//            }) { (_) in
-//                self.textViewHeightAnchor.isActive = false
-//                self.textViewHeightAnchor = nil
-//                self.textView.isScrollEnabled = false
-//            }
-            
-        }
         
+        if self.textViewHeightAnchor != nil {
+            self.textViewHeightAnchor.constant = 34
+            UIView.animate(withDuration: 0.0, animations: {
+                self.layoutIfNeeded()
+            }) { (_) in
+                self.textView.isScrollEnabled = false
+            }
+        }
+        self.currentTextViewHeight = 0.0
+        self.previousTextViewHeight = 0.0
         self.textView.sizeToFit()
         self.reloadInputViews()
+       
+        
     }
     
     let sendButton: UIButton = {
@@ -122,7 +123,6 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         
     }
     
-    
     func updateOnTextViewChange() {
         if self.contentHeight == nil {
             self.contentHeight = textView.contentSize.height
@@ -156,9 +156,12 @@ class InputAccessoryView: UIView, UITextViewDelegate {
             if height != currentTextViewHeight {
                 previousTextViewHeight = currentTextViewHeight
                 currentTextViewHeight = height
-                if currentTextViewHeight != previousTextViewHeight {
-                    delegate?.updateTableViewForText(additionalTextViewHeight: currentTextViewHeight - previousTextViewHeight)
-                }
+                
+                delegate?.updateTableViewForText(additionalTextViewHeight: currentTextViewHeight - previousTextViewHeight)
+                
+            } else if previousTextViewHeight == 0.0 {
+                print("FUCK")
+                delegate?.updateTableViewForText(additionalTextViewHeight: 0)
             }
         }
     }
@@ -171,15 +174,20 @@ class InputAccessoryView: UIView, UITextViewDelegate {
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
+        
         if textView.text.isEmpty {
             textView.text = placeHolderText
             textView.textColor = .lightGray
+            self.textView.reloadInputViews()
+            self.textView.sizeToFit()
         }
     }
     
     override func didMoveToWindow() {
         self.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 12).isActive = true
     }
+    
+   // override var intrinsicContentSize: CGSize { return .zero }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -200,7 +208,6 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         backgroundView.layer.cornerRadius = (frame.height - 16) / 2
     
         addSubview(textView)
-        print("DO I WANT TOP ANCHOR HERE?")
         textView.anchor(top: nil, left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 56, paddingBottom: 8, paddingRight: 50, width: 0, height: 0)
         
         addSubview(sendButton)
@@ -224,17 +231,26 @@ class InputAccessoryView: UIView, UITextViewDelegate {
     
     @objc func handleSend() {
         
+        self.endTagging()
+        
         let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if text == placeHolderText || text == "" {
+        if (text == placeHolderText ?? "") || text == "" {
             return
         }
         
-        var taggedUids = [Int]()
-        if self.tagCollectionView.selectedIdToUserDict.values.count > 0 {
-            taggedUids = Array(Set(self.tagCollectionView.selectedIdToUserDict.values))
+        if let tagCollectionView = self.tagCollectionView {
+            if tagCollectionView.selectedIdToUserDict.values.count > 0 {
+                let taggedUids = Array(Set(tagCollectionView.selectedIdToUserDict.values))
+                delegate?.didSubmit(for: text, taggedUids: taggedUids)
+            } else {
+                delegate?.didSubmit(for: text, taggedUids: [])
+            }
+        } else {
+            delegate?.didSubmit(for: text, taggedUids: [])
         }
-        delegate?.didSubmit(for: text, taggedUids: taggedUids)
+        
+        
         
     }
     
@@ -247,14 +263,14 @@ extension InputAccessoryView: TagCollectionViewDelegate {
     
     func didSelectName(username: String) {
        
-        updateOnTextViewChange()
-        
         endTagging()
         
         guard let index = textView.text.lastIndex(of: "@") else { return }
         let substring = String(textView.text[...index])
         let newText = substring + "\(username) "
         self.textView.text = newText
+        
+        updateOnTextViewChange()
         
     }
     
@@ -270,6 +286,7 @@ extension InputAccessoryView: TagCollectionViewDelegate {
     }
     
     func endTagging() {
+        guard tagCollectionView != nil else { return }
         DispatchQueue.main.async {
             self.isTagging = false
             self.delegate?.tag(add: false)
