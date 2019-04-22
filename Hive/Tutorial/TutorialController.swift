@@ -16,7 +16,7 @@ class TutorialController: UICollectionViewController, UICollectionViewDelegateFl
     
     weak var delegate: TutorialControllerDelegate?
     
-    let images = ["HiveJoinCreate","ProfileAndSearch","camerapin","FeedLike","Congrats"]
+    let images = ["ProfileAndSearch","HiveJoinCreate","camerapin","FeedLike","Congrats"]
     
     fileprivate let tutorialCellId = "tutorialCellId"
     
@@ -32,7 +32,7 @@ class TutorialController: UICollectionViewController, UICollectionViewDelegateFl
     
     let doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Okay, I got it", for: .normal)
+        button.setTitle("Okay, I got it.", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.titleLabel?.textAlignment = .right
         button.tintColor = .mainRed()
@@ -53,9 +53,7 @@ class TutorialController: UICollectionViewController, UICollectionViewDelegateFl
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
         blurView.frame = view.bounds
         view.insertSubview(blurView, at: 0)
-        
         setupCollectionView()
-        
     }
     
     fileprivate func setupCollectionView() {
