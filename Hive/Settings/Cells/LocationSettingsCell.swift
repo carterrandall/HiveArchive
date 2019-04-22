@@ -19,7 +19,8 @@ class LocationSettingsCell: UICollectionViewCell {
     
     var ghost: Bool? {
         didSet {
-            if let ghost = ghost, ghost {
+            guard let ghost = ghost else { return }
+            if ghost {
                 self.chooseFriendsButton.isHidden = true
                 self.ghostSwitchControl.isOn = true
                 ghostDetailLabel.text = "Your location is not visible to anyone."
@@ -60,7 +61,6 @@ class LocationSettingsCell: UICollectionViewCell {
     let privateDetailLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Everyone can view your profile."
         label.textColor = .gray
         label.numberOfLines = 0
         return label
@@ -149,7 +149,6 @@ class LocationSettingsCell: UICollectionViewCell {
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.addTarget(self, action: #selector(handleChooseFriends), for: .touchUpInside)
         button.titleLabel?.textAlignment = .left
-        button.isHidden = true
         return button
     }()
     
@@ -190,6 +189,7 @@ class LocationSettingsCell: UICollectionViewCell {
         
         addSubview(chooseFriendsButton)
         chooseFriendsButton.anchor(top: nil, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 16, paddingBottom: 8, paddingRight: 0, width: 0, height: 40)
+        chooseFriendsButton.isHidden = true
         
         
     }
