@@ -64,7 +64,6 @@ class NotificationsCell: UITableViewCell {
                 textLabelToPostLeftAnchor.isActive = true
                 textLabelToRightAnchor.isActive = false
                 postView.isHidden = false
-                
                 attributedString.append(NSAttributedString(string: " tagged you in a comment: '\(notification.message)'." , attributes: attributes))
                 
                 if let post = notification.post {

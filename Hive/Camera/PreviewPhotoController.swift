@@ -173,6 +173,9 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
             
             Alamofire.upload(multipartFormData: { (multipart) in
                 multipart.append(uploadData, withName: "file", fileName: "\(filename).jpg", mimeType: "image/jpeg")
+                
+                
+                
             }, usingThreshold: UInt64.init(), to: url, method: .post, headers: header) { (encodingResult) in
                 
                 switch encodingResult {
