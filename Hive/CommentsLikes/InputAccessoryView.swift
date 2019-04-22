@@ -215,15 +215,11 @@ class InputAccessoryView: UIView, UITextViewDelegate {
     }
     
     @objc func handleSend() {
-        
         let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        
         if text == placeHolderText || text == "" {
             return
         }
-        
         delegate?.didSubmit(for: text, taggedUids: Array(Set(self.tagCollectionView.selectedIdToUserDict.values)))
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
