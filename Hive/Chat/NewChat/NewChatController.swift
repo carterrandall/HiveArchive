@@ -134,7 +134,7 @@ class NewChatController: UIViewController, UICollectionViewDelegate, UICollectio
             filteredSearchedUsers.forEach { (user) in
                 checkToAddUser(user: user)
             }
-            
+    //////////////////// //////////////////// //////////////////// //////////////////// ////////////////////
         } else if stringOfInterest.count == 0 {
             
             shouldShowSearchedUsers = false
@@ -148,7 +148,9 @@ class NewChatController: UIViewController, UICollectionViewDelegate, UICollectio
     fileprivate func checkToAddUser(user: User) {
         if stringOfInterest.contains(user.username) || stringOfInterest.contains(user.fullName) { //check for adding
             selectedIdToFriendDict[user.uid] = user
-            selectedUsernames.append(user.username)
+            if !selectedUsernames.contains(user.username) {
+                selectedUsernames.append(user.username)
+            }
             setAttributedText()
         }
     }
@@ -393,8 +395,12 @@ class NewChatController: UIViewController, UICollectionViewDelegate, UICollectio
         }
         
         if indexPath.item == self.filteredSearchedUsers.count - 1 && !isFinishedPagingSearch && shouldShowSearchedUsers {
+            if self.filteredSearchedUsers.count < 10 {
+                self.lastIndexSearch = 0
+            }
             self.paginateSearchedUsers()
         }
+        
         var friend: User!
         if shouldShowSearchedUsers {
             friend = filteredSearchedUsers[indexPath.item]

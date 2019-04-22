@@ -47,6 +47,7 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
         }
     }
     
+    
     lazy var containerView: InputAccessoryView = {
         let frame = CGRect(x: 0, y: 0, width: self.frame.width, height: 50)
         let inputAccessoryView = InputAccessoryView(frame: frame)
@@ -70,6 +71,7 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
     }
     
     var containerViewBottomConstraint: NSLayoutConstraint!
+    var containerViewHeightContraint: NSLayoutConstraint!
     var tableViewHeightConstraint: NSLayoutConstraint!
     fileprivate func setupTableView() {
         
@@ -80,15 +82,18 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
         tableViewHeightConstraint.isActive = true
         
         addSubview(containerView)
-        containerView.anchor(top: nil, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 50)
+        containerView.anchor(top: nil, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
         containerViewBottomConstraint = containerView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
         containerViewBottomConstraint.isActive = true
         
+        containerViewHeightContraint = containerView.heightAnchor.constraint(equalToConstant: 50)
+        containerViewHeightContraint.isActive = true
+    
         let downSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(swipe:)))
         downSwipe.direction = .down
         containerView.addGestureRecognizer(downSwipe)
         
-        
+
     }
     
     @objc fileprivate func handleSwipe(swipe: UISwipeGestureRecognizer) {
@@ -130,17 +135,13 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
             let lastCellRect = CGRect(x: flippedConvertedCellRect.origin.x, y: (y < 0 ? 0 : y), width: flippedConvertedCellRect.width, height: flippedConvertedCellRect.height)
             
             var visibleRect = self.bounds
-            print(visibleRect.size.height, "HEIGHT")
-            visibleRect.size.height -= (keyboardFrame.height + self.containerView.frame.height)
             
-            
-            print(lastCellRect, "LAST")
-            print(visibleRect, "VISIBLE")
+            visibleRect.size.height -= (keyboardFrame.height + self.containerViewHeightContraint.constant)
             
             if !visibleRect.contains(lastCellRect) {
-                print("ADJUSTING")
+         
                 DispatchQueue.main.async {
-                    self.tableView.contentInset.top = keyboardFrame.height + self.containerView.frame.height - (self.frame.height - self.tableViewHeightConstraint.constant) + self.safeAreaInsets.top
+                    self.tableView.contentInset.top = keyboardFrame.height + self.containerViewHeightContraint.constant - (self.frame.height - self.tableViewHeightConstraint.constant) + self.safeAreaInsets.top
                     let portionFistCellRect = CGRect(x: firstCellRect.origin.x, y: firstCellRect.origin.y, width: 50, height: 50)
                     self.tableView.scrollRectToVisible(portionFistCellRect, animated: true)
                 }
@@ -162,12 +163,12 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
                 UIView.animate(withDuration: duration, delay: 0, options: UIView.AnimationOptions(rawValue: curve), animations: {
                     self.layoutIfNeeded()
     
-                    if self.tableViewHeightConstraint.constant < (self.frame.height - self.safeAreaInsets.top - self.containerView.frame.height) {
+                    if self.tableViewHeightConstraint.constant < (self.frame.height - self.safeAreaInsets.top - self.containerViewHeightContraint.constant) {
                         print("X")
                         self.tableView.contentInset.top = 0.0
                     } else {
                         print("Y")
-                        self.tableView.contentInset.top = self.containerView.frame.height
+                        self.tableView.contentInset.top = self.containerViewHeightContraint.constant
                     }
                 }, completion: { (_) in
                     
@@ -223,13 +224,13 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
                         heightOfTableView += cell.frame.height
                     }
                     
-                    if heightOfTableView >= self.frame.height - self.safeAreaInsets.top - self.containerView.frame.height {
+                    if heightOfTableView >= self.frame.height - self.safeAreaInsets.top - self.containerViewHeightContraint.constant {
                         self.tableViewHeightConstraint.constant = self.frame.height - self.safeAreaInsets.top
                         if let expired = self.post?.expired, expired {
                             self.tableView.contentInset.top = 0.0
                         } else {
                             // print(self.safeAreaInsets.bottom, self.containerView.frame.height, "SHIT NIGGA")
-                            self.tableView.contentInset.top = self.containerView.frame.height
+                            self.tableView.contentInset.top = self.containerViewHeightContraint.constant
                             let lastRect = self.tableView.rectForRow(at: IndexPath(item: 0, section: 0))
                             let portionRect = CGRect(x: lastRect.origin.x, y: lastRect.origin.y, width: 50, height: 50)
                             self.tableView.scrollRectToVisible(portionRect, animated: false)
@@ -351,7 +352,7 @@ extension CommentsControllerCell: CommentCellDelegate {
         
         let rectToRemove = self.tableView.rectForRow(at: indexPath)
         
-        if (self.tableView.contentSize.height - rectToRemove.height) < self.tableViewHeightConstraint.constant - self.containerView.frame.height {
+        if (self.tableView.contentSize.height - rectToRemove.height) < self.tableViewHeightConstraint.constant - self.containerViewHeightContraint.constant {
             
             self.tableView.bounces = false
             self.tableViewHeightConstraint.constant -= rectToRemove.height
@@ -379,10 +380,28 @@ extension CommentsControllerCell: CommentCellDelegate {
 }
 
 extension CommentsControllerCell: InputAccessoryViewDelegate {
-
-    func didSubmit(for text: String) {
+    
+    func tag(add: Bool) {
+        if add {
+            print("showing tag")
+            self.containerViewHeightContraint.constant += 40
+            UIView.animate(withDuration: 0.0) {
+               self.layoutIfNeeded()
+            }
+            
+        } else {
+            print("hiding tag")
+            self.containerViewHeightContraint.constant -= 40
+            UIView.animate(withDuration: 0.0) {
+                self.layoutIfNeeded()
+            }
+            
+        }
+    }
+    
+    func didSubmit(for text: String, taggedUids: [Int]) {
         guard let pid = self.post?.id, let uid = self.post?.uid, let username = self.post?.user?.username else { return }
-        let params = ["PID": pid, "postuid": uid, "postusername": username, "text" : text] as [String: Any]
+        let params = ["PID": pid, "postuid": uid, "postusername": username, "text" : text, "taggedUsers": taggedUids] as [String: Any]
     
         MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/newComment", params: params) { (response) in
             if response.response?.statusCode == 200 {
@@ -412,7 +431,7 @@ extension CommentsControllerCell: InputAccessoryViewDelegate {
         
         let rowHeight = self.tableView.rectForRow(at: IndexPath(item: 0, section: 0)).height
 
-        if (self.tableView.contentSize.height + rowHeight) < (self.frame.height - self.safeAreaInsets.top - self.containerView.frame.height) {
+        if (self.tableView.contentSize.height + rowHeight) < (self.frame.height - self.safeAreaInsets.top - self.containerViewHeightContraint.constant) {
             
             self.tableView.bounces = false
             
@@ -439,7 +458,7 @@ extension CommentsControllerCell: InputAccessoryViewDelegate {
             UIView.animate(withDuration: 0) {
                 self.tableView.layoutIfNeeded()
             }
-            self.tableView.contentInset.top = self.containerView.frame.height
+            self.tableView.contentInset.top = self.containerViewHeightContraint.constant
             
         }
         
@@ -449,8 +468,9 @@ extension CommentsControllerCell: InputAccessoryViewDelegate {
     }
     
     func updateTableViewForText(additionalTextViewHeight: CGFloat) {
-        if self.comments.count > 0 {
+        if self.comments.count > 0 && self.tableView.bounces {
             self.additionalTextViewHeight += additionalTextViewHeight
+            
             if (self.additionalTextViewHeight + additionalTextViewHeight) < self.additionalTextViewHeight { // if moving down animate it
                 DispatchQueue.main.async {
                     UIView.animate(withDuration: 0.2, animations: {
@@ -464,7 +484,11 @@ extension CommentsControllerCell: InputAccessoryViewDelegate {
             let partialRect = CGRect(x: rect.origin.x, y: rect.origin.y, width: 50, height: 50)
             self.tableView.scrollRectToVisible(partialRect, animated: true)
             
-            
+        }
+        
+        self.containerViewHeightContraint.constant += additionalTextViewHeight
+        UIView.animate(withDuration: 0.0) {
+            self.layoutIfNeeded()
         }
         
     }

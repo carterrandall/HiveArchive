@@ -329,6 +329,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
             self.menuBar.friendCount = user.friends
             self.menuBar.postCount = user.postcount
         } else {
+            self.headerView.user?.sharingLocation = user.sharingLocation
             self.menuBar.friendCount = user.friends
             self.menuBar.postCount = user.postcount
             self.headerView.user?.sharingLocation = user.sharingLocation
@@ -338,6 +339,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
     
     //menu bar collectionview methods
     fileprivate var isFirstLoad: Bool = true
+    fileprivate var friendStatusForUpdate: Int?
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if isFirstLoad {
             scrollToMenuIndex(menuIndex: 0, animated: false)
@@ -351,6 +353,14 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
                 reloadPostsOnScroll = false
             }
         }
+        
+        if let status = friendStatusForUpdate {
+            if let cell = cell as? ProfilePostsControllerCell {
+                cell.didChangeFriendStatus(status: status)
+                friendStatusForUpdate = nil
+            }
+        }
+       
     }
     
     func scrollToMenuIndex(menuIndex: Int, animated: Bool) {
@@ -385,7 +395,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
             }
             cell.delegate = self
             
-            if let pp = self.privateProfile, pp {
+            if let pp = self.privateProfile, pp && user?.uid != MainTabBarController.currentUser?.uid {
                 cell.privateProfile = true
             } else {
                 cell.postJson = self.postJson
@@ -472,12 +482,14 @@ extension ProfileMainController : ProfileHeaderViewDelegate {
             if (sharingLocation){
                 alertController.addAction(UIAlertAction(title: "Stop Sharing Location", style: .default, handler: { (_) in
                     DispatchQueue.main.async {
+                        self.headerView.user?.sharingLocation = false
                         self.handleStopSharingLocation()
                     }
                 }))
             }else{
                 alertController.addAction(UIAlertAction(title: "Resume Sharing Location", style: .default, handler: { (_) in
                     DispatchQueue.main.async {
+                        self.headerView.user?.sharingLocation = true
                         self.handleStartSharingLocation()
                     }
                 }))
@@ -684,8 +696,25 @@ extension ProfileMainController : ProfileHeaderViewDelegate {
         }
     }
     
+    
     func didChangeFriendStatus(friendStatus: Int, userId: Int) {
-        delegate?.didChangeFriendStatusInProfile(friendStatus: friendStatus, userId: userId) //if user goes from search or likes to profile and adds in header
+        
+        DispatchQueue.main.async {
+            
+            if let profilePostsCell = self.collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? ProfilePostsControllerCell {
+                profilePostsCell.didChangeFriendStatus(status: friendStatus)
+            } else {
+                self.friendStatusForUpdate = friendStatus
+            }
+            
+            if friendStatus == 0 {
+                self.privateProfile = false
+            }
+            
+           
+            self.delegate?.didChangeFriendStatusInProfile(friendStatus: friendStatus, userId: userId) //if user goes from search or likes to profile and adds in header
+        }
+        
     }
     
 }

@@ -10,6 +10,12 @@ import UIKit
 import Photos
 protocol PhotoSelectionControllerDelegate {
     func didSelectPhoto(image: UIImage)
+    func endSessionAfterShare()
+}
+
+extension PhotoSelectionControllerDelegate {
+    func didSelectPhoto(image: UIImage) {}
+    func endSessionAfterShare() {}
 }
 
 private extension UICollectionView {
@@ -35,11 +41,26 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
     
     var isFromCamera: Bool = false
     
-    
+    var backgroundImageView: UIImageView?
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView.backgroundColor = .black
+        if isFromCamera {
+            backgroundImageView = UIImageView()
+            backgroundImageView?.contentMode = .scaleAspectFill
+            backgroundImageView?.clipsToBounds = true
+            backgroundImageView?.frame = view.frame
+            view.insertSubview(backgroundImageView!, at: 0)
+            let whiteView = UIView()
+            whiteView.backgroundColor = .white
+            view.insertSubview(whiteView, aboveSubview: backgroundImageView!)
+            whiteView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+            
+            collectionView.backgroundColor = .clear
+            collectionView.bounces = false
+        } else {
+            collectionView.backgroundColor = .black
+        }
         
         collectionView.register(PhotoSelectionCell.self, forCellWithReuseIdentifier: cellId)
         collectionView.register(PhotoSelectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
@@ -52,6 +73,8 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
             allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
             fetchResult = PHAsset.fetchAssets(with: allPhotosOptions)
         }
+        
+        setupNavigationButtons()
         
     }
     
@@ -126,25 +149,44 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
     override var prefersStatusBarHidden: Bool {
         return true
     }
-
+    
     fileprivate func setupNavigationButtons() {
         
-        
         navigationController?.navigationBar.shadowImage = UIImage()
-        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(handleCancel))
         
         if self.isFromCamera {
             navigationController?.makeTransparent()
+            
             let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
             view.addSubview(blurView)
             blurView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
             
-            navigationItem.leftBarButtonItem = cancelButton
-            let nextButton = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(handleDone))
-            navigationItem.rightBarButtonItem = nextButton
-            nextButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black], for: .normal)
-            cancelButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black], for: .normal)
+            let cancelButtonView: UIButton = {
+                let button = UIButton(type: .system)
+                button.setTitle("Cancel", for: .normal)
+                button.tintColor = .white
+                button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+                button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+                button.addTarget(self, action: #selector(handleCancel), for: .touchUpInside)
+                return button
+            }()
+            
+            let doneButtonView: UIButton = {
+                let button = UIButton(type: .system)
+                button.setTitle("Done", for: .normal)
+                button.tintColor = .white
+                button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+                button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+                button.addTarget(self, action: #selector(handleDone), for: .touchUpInside)
+                return button
+            }()
+            
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButtonView)
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: doneButtonView)
+           
+          
         } else {
+            let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(handleCancel))
             navigationController?.navigationBar.barTintColor = .black
             navigationItem.leftBarButtonItem = cancelButton
             let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(handleDone))
@@ -154,9 +196,6 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
 
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        setupNavigationButtons()
-    }
     
     @objc func handleCancel() {
         
@@ -190,6 +229,7 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
         } else {
             if isFromCamera {
                 self.presentPreviewPhotoController(image: image)
+            
             } else {
                 delegate?.didSelectPhoto(image: image)
                 self.dismiss(animated: true, completion: nil)
@@ -203,6 +243,7 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
         self.shouldUpdateAssets = false
         let previewPhotoController = PreviewPhotoController()
         previewPhotoController.image = image
+        previewPhotoController.delegate = self
         previewPhotoController.isFromCameraRoll = self.isFromCamera
         self.navigationController?.pushViewController(previewPhotoController, animated: true)
     }
@@ -226,7 +267,9 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
             imageManager.requestImage(for: selectedAsset, targetSize: largerTargetSize, contentMode: .aspectFit, options: nil) { (image, info) in
                 
                     header.image = image
-                
+                if let backgroundiv = self.backgroundImageView {
+                    backgroundiv.image = image
+                }
             }
         }
         
@@ -254,11 +297,10 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
                 self.selectedImage = image
                 self.collectionView.reloadData()
                 self.collectionView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: true)
+                
             }
             
         }
-        
-        
         
     }
     
@@ -305,6 +347,14 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateCachedAssets()
     }
+    
+}
+
+extension PhotoSelectionController: PreviewPhotoControllerDelegate {
+    func endSessionAfterShare() {
+        delegate?.endSessionAfterShare()
+    }
+    
     
 }
 

@@ -17,28 +17,27 @@ protocol PreviewPhotoControllerDelegate {
 class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     
     var delegate: PreviewPhotoControllerDelegate?
+    var isFromCameraRoll: Bool = false
+    var cropRect: CGRect?
+    var backgroundTask: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier.invalid
+    var captionView: CaptionView!
     
     fileprivate var didAddCaption: Bool = false
     
     var image: UIImage! {
         didSet {
             self.previewImageView.image = image
+           // self.previewImageView.image = UIImage(named: "indian")
         }
     }
-    
-    var cropRect: CGRect?
-    
-    var backgroundTask: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier.invalid
-    
-    var isFromCameraRoll: Bool = false
     
     let previewImageView: UIImageView = {
         let iv = UIImageView(frame: .zero)
         iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
         return iv
     }()
 
-    var captionView: CaptionView!
     let previewHUD = CameraPreviewHUD()
     
     override var prefersStatusBarHidden: Bool { return true }
@@ -53,16 +52,28 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     var bottomAlphaView: UIView!
     var centerView: UIView!
     func setupViews() {
-        view.addSubview(previewImageView)
-        previewImageView.frame = view.bounds
         
-        print(AVMakeRect(aspectRatio: CGSize(width: 3, height: 4), insideRect: self.view.frame), "MAKE RECT")
+        view.addSubview(previewImageView)
+        
         centerView = UIView()
         view.addSubview(centerView)
         centerView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: view.frame.width, height: view.frame.width * (4/3))
         centerView.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleCaption))
         centerView.addGestureRecognizer(tap)
+        
+        if self.isFromCameraRoll {
+            previewImageView.anchor(top: centerView.topAnchor, left: centerView.leftAnchor, bottom: centerView.bottomAnchor, right: centerView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: view.frame.width, height: view.frame.width * (4/3))
+            if let image = self.image {
+                let backgroundImageView = UIImageView(image: image)
+                backgroundImageView.contentMode = .scaleAspectFill
+                backgroundImageView.clipsToBounds = true
+                view.insertSubview(backgroundImageView, at: 0)
+                backgroundImageView.frame = view.bounds
+            }
+        } else {
+            previewImageView.frame = view.bounds
+        }
         
         bottomAlphaView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         view.addSubview(bottomAlphaView)
@@ -116,11 +127,13 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     }
   
     fileprivate func overlayImage(imageView: UIImageView) -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(imageView.frame.size, false, 0.0)
+        
+        UIGraphicsBeginImageContextWithOptions(self.view.frame.size, false, 0.0)
         imageView.superview!.layer.render(in: UIGraphicsGetCurrentContext()!)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image!
+        
     }
     
     fileprivate func registerBackgroundTask() {
@@ -145,6 +158,8 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
         var croppedImage: UIImage?
         if didAddCaption {
             croppedImage = image.crop(rect: self.centerView.frame, withCaption: true)
+        } else if isFromCameraRoll {
+            croppedImage = image
         } else {
             croppedImage = image.crop(rect: self.cropRect!, withCaption: false)
         }
@@ -271,6 +286,8 @@ extension PreviewPhotoController: CameraPreviewHUDDelegate {
         var croppedImage: UIImage?
         if didAddCaption {
             croppedImage = previewImage.crop(rect: self.centerView.frame, withCaption: true)
+        } else if isFromCameraRoll {
+            croppedImage = previewImage
         } else {
             croppedImage = previewImage.crop(rect: self.cropRect!, withCaption: false)
         }
@@ -305,10 +322,7 @@ extension PreviewPhotoController: CameraPreviewHUDDelegate {
                     self.present(permissionsNavController, animated: true, completion: nil)
                 }
             }
-            
         }
-        
-        
     }
     
     fileprivate func checkPhotoAuthStatus(completion: @escaping(Bool) -> ()) {
@@ -333,6 +347,8 @@ extension PreviewPhotoController: CameraPreviewHUDDelegate {
         case .restricted:
             result = false
             completion(result)
+        @unknown default:
+            completion(false)
         }
     }
 

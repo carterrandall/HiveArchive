@@ -155,7 +155,6 @@ class ProfileHeaderView: UIView {
     }()
     
     @objc fileprivate func handleUserAction() {
-        print(self.user?.sharingLocation)
         if let sharingLocation = self.user?.sharingLocation, self.profileEditAddButton.friendState == .friends {
             delegate?.displayUserActionSheet(friends: true, sharingLocation: sharingLocation)
         }else{

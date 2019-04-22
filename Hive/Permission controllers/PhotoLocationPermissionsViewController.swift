@@ -14,7 +14,7 @@ class PhotoLocationPermissionsViewController: UIViewController {
     var isPhotos: Bool? {
         didSet {
             if let isPhotos = isPhotos, isPhotos {
-                label.text = "Allow Hive to access your photo library so you can customize your profile."
+                label.text = "Allow Hive to access your photo library so you can upload photos from your camera roll."
                 settingsButton.setTitle("Allow photo access", for: .normal)
             } else {
                 label.text = "Allow access to your location to begin using Hive. Only friends can see your location and you can turn off sharing in settings."

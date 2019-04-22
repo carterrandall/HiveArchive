@@ -18,6 +18,7 @@ protocol SignUpControllerCellDelegate: class {
     func showCountryCode(controller: CountryCodeController)
     func lockScreen()
     func unlockScreen()
+    func showTutorial()
 }
 
 class SignUpControllerCell: UICollectionViewCell {
@@ -68,6 +69,7 @@ class SignUpControllerCell: UICollectionViewCell {
         
         registerForKeyboardNotifications()
         
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -81,6 +83,7 @@ class SignUpControllerCell: UICollectionViewCell {
     
         @objc func keyboardWillShow(notification: NSNotification) {
     
+
             if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
     
                 var contentInset = self.scrollView.contentInset
@@ -133,11 +136,9 @@ extension SignUpControllerCell: SignUpInputViewDelegate, CAAnimationDelegate {
         
     }
     
-//    func showAlertViewWithTitle(title: String) {
-//        //umm why
-//    }
-//
     func signUp(email: String, password: String, name: String, username: String, willSignUpWithEmail: Bool) {
+        
+        
         delegate?.lockScreen()
         self.endEditing(true)
         DispatchQueue.main.async {
@@ -177,7 +178,14 @@ extension SignUpControllerCell: SignUpInputViewDelegate, CAAnimationDelegate {
                             } catch {
                                 print("error saving password to keychain")
                             }
-                            self.delegate?.loggedInSuccessfully()
+                            
+                            
+                            if UserDefaults.standard.value(forKey: "tutorial") == nil {
+                                UserDefaults.standard.set(1, forKey: "tutorial")
+                                self.delegate?.showTutorial()
+                            } else {
+                                self.delegate?.loggedInSuccessfully()
+                            }
                         }
                         else{
                             self.cancelAnimate()

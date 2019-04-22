@@ -274,7 +274,7 @@ struct FromUser {
 }
 
 struct UserSettings {
-    let ghost: Bool
+    var ghost: Bool
     let commentNotifications: Bool
     let likeNotifications: Bool
     let friendNotifications: Bool
