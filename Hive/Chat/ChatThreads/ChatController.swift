@@ -388,6 +388,11 @@ class ChatController: UITableViewController, ChatInputAccessoryViewDelegate, Cha
             
         }
         
+        self.containerViewHeight.constant += additionalTextViewHeight
+        UIView.animate(withDuration: 0.0) {
+            self.view.layoutIfNeeded()
+        }
+        
     }
     
     override var inputAccessoryView: UIView? {
@@ -400,6 +405,7 @@ class ChatController: UITableViewController, ChatInputAccessoryViewDelegate, Cha
         return true
     }
     
+    var containerViewHeight: NSLayoutConstraint!
     override func viewDidLoad() {
         super.viewDidLoad()
         MainTabBarController.requestManager.delegate = self
@@ -407,6 +413,9 @@ class ChatController: UITableViewController, ChatInputAccessoryViewDelegate, Cha
         setupTableView()
         setupNavBarCollectionView()
         registerForKeyboardNotifications()
+        
+        self.containerViewHeight = self.containerView.heightAnchor.constraint(equalToConstant: 50)
+        self.containerViewHeight.isActive = true
         
     }
     

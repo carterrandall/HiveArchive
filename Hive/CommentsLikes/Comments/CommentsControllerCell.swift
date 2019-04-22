@@ -93,7 +93,6 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
         downSwipe.direction = .down
         containerView.addGestureRecognizer(downSwipe)
         
-
     }
     
     @objc fileprivate func handleSwipe(swipe: UISwipeGestureRecognizer) {
