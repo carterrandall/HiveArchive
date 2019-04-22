@@ -332,6 +332,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
             self.headerView.user?.sharingLocation = user.sharingLocation
             self.menuBar.friendCount = user.friends
             self.menuBar.postCount = user.postcount
+            self.headerView.user?.sharingLocation = user.sharingLocation
         }
         self.headerView.checkIfShouldShowIndicatorView()
     }
@@ -568,7 +569,7 @@ extension ProfileMainController : ProfileHeaderViewDelegate {
                     } else {
                         self.animatePopup(title: "You have started sharing your location.")
                     }
-                    self.user?.sharingLocation = false
+                    self.user?.sharingLocation = true
                     // ^^^^^^ This is the part where I need you to set this on the user ovject in the thing. 
                     
                     

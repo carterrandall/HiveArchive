@@ -12,14 +12,12 @@ class ChooseFriendCell: UICollectionViewCell {
     
     var nameLabelToRightAnchor: NSLayoutConstraint!
     var nameLabelToButtonAnchor: NSLayoutConstraint!
-    
     var user: User? {
         didSet {
             guard let user = user else { return }
             profileImageView.profileImageCache(url: user.profileImageUrl, userId: user.uid)
             usernameLabel.text = user.username
             nameLabel.text = user.fullName
-            
             if let sharing = user.sharingLocation, sharing {
                 nameLabelToRightAnchor.isActive = false
                 nameLabelToButtonAnchor.isActive = true
@@ -27,9 +25,9 @@ class ChooseFriendCell: UICollectionViewCell {
             } else {
                 nameLabelToRightAnchor.isActive = true
                 nameLabelToButtonAnchor.isActive = false
-                showingButton.isHidden = true
+                disabledButton()
             }
-            
+
         }
     }
     
@@ -64,9 +62,58 @@ class ChooseFriendCell: UICollectionViewCell {
     let showingButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .mainRed()
-        button.setImage(UIImage(named: "check"), for: .normal)
+        button.setTitle("Enabled", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+        button.setTitleColor(UIColor.mainRed(), for: .normal)
+        button.addTarget(self, action: #selector(handleStopSharingLocation), for: .touchUpInside)
+        button.isEnabled = true
         return button
     }()
+    fileprivate func disabledButton(){
+        user?.sharingLocation = false
+        showingButton.addTarget(self, action: #selector(handleStartSharingLocation), for: .touchUpInside)
+        showingButton.setTitle("Disabled", for: .normal)
+        showingButton.setTitleColor(UIColor.lightGray  , for: .normal)
+        
+    }
+    fileprivate func enabledButton(){
+        user?.sharingLocation = true
+        // ^^^^^^ This is the part where I need you to set this on the user ovject in the thing.
+        showingButton.addTarget(self, action: #selector(handleStopSharingLocation), for: .touchUpInside)
+        showingButton.setTitle("Enabled", for: .normal)
+        showingButton.setTitleColor(UIColor.mainRed(), for: .normal)
+    }
+    
+    
+    
+    @objc fileprivate func handleStopSharingLocation(){
+        // set the user attribute to true probably, although not sure how to do that and shit. (should be the same user both spots I assume though).
+        print("stop sharing location")
+        if let uid = self.user?.uid {
+            MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/stopSharingLocationWithUser", params: ["UID":uid]) { (response) in
+                if response.response?.statusCode == 200 {
+                    self.disabledButton()
+                }
+            }
+            
+        }
+    }
+    
+    @objc fileprivate func handleStartSharingLocation(){
+        if let uid = self.user?.uid {
+            MainTabBarController.requestManager.makeResponseRequest(urlString: "/Hive/api/startSharingLocationWithUser", params: ["UID":uid]) { (response) in
+                if response.response?.statusCode == 200 {
+                    self.enabledButton()
+                }
+            }
+            
+        }
+    }
+    
+    
+    
+    
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -78,9 +125,10 @@ class ChooseFriendCell: UICollectionViewCell {
         profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         addSubview(showingButton)
-        showingButton.anchor(top: nil, left: nil, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 20, width: 40, height: 40)
+        showingButton.anchor(top: nil, left: nil, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 20, width: 80, height: 40)
         showingButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         showingButton.isHidden = true
+        
         
         addSubview(nameLabel)
         nameLabel.anchor(top: profileImageView.centerYAnchor, left: profileImageView.rightAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 8, paddingBottom: 0, paddingRight: 8, width: 0, height: 0)

@@ -23,13 +23,13 @@ class TutorialCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = UIColor(white: 1, alpha: 0.9)
+        backgroundColor = .clear //UIColor(white: 1, alpha: 0.9)
         layer.cornerRadius = 5
         
         addSubview(imageView)
         imageView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: frame.width, height: frame.height)
         
-        setShadow(offset: CGSize(width: 0, height: 3), opacity: 0.3, radius: 3, color: UIColor.black)
+//        setShadow(offset: CGSize(width: 0, height: 3), opacity: 0.3, radius: 3, color: UIColor.black)
         
     }
     

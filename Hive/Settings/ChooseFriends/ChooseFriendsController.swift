@@ -46,7 +46,7 @@ class ChooseFriendsController: UICollectionViewController, UICollectionViewDeleg
         guard let uid = MainTabBarController.currentUser?.uid else { return }
         let params = ["UID": uid, "lastIndex": lastIndex] as [String: Any]
         self.lastIndex += 1
-        MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/paginateFriendsOnProfile", params: params) { (json, _) in
+        MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/paginateFriendsWithLocationSharingStatus", params: params) { (json, _) in
             guard let json = json as? [[String: Any]] else { return }
             self.processFriendJson(json: json)
         }

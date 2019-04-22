@@ -180,16 +180,17 @@ extension MapRender: CreateHiveMenuBarDelegate {
         let zoom = MapRender.mapView.zoomLevel
         let rfloat = sliderValue //PASS VALUE TO HERE
         let radius = Double(rfloat)*111.6752141*cos(latitude)/(pow(2, zoom))
-        if (distance > 20000) || (radius > 3)  { // If distance is > 50km or radius is > 15 km dont let hive be made :
+        if (distance > 20000) || (radius > 3) || (radius < 0.1) { // If distance is > 50km or radius is > 15 km dont let hive be made :
             if (distance > 20000) && (radius > 3) {
                 showInvalidHiveView(infraction: "Both")
+            } else if (distance > 20000 && radius < 0.1){
+                showInvalidHiveView(infraction: "bothsmall")
+            }else if radius > 3{
+                showInvalidHiveView(infraction: "radius")
+            }else{
+                showInvalidHiveView(infraction: "small")
             }
-            else {
-                showInvalidHiveView(infraction: (distance > 20000 ? "distance" : "radius"))
-            }
-        }
-        else {
-            print("Valid hive")
+        }else {
             self.createHiveMenuBar.validHive()
         }
     }

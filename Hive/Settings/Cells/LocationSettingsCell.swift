@@ -145,7 +145,7 @@ class LocationSettingsCell: UICollectionViewCell {
     lazy var chooseFriendsButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .mainRed()
-        button.setTitle("Choose Friends", for: .normal)
+        button.setTitle("Choose Friends For Location Sharing", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.addTarget(self, action: #selector(handleChooseFriends), for: .touchUpInside)
         button.titleLabel?.textAlignment = .left

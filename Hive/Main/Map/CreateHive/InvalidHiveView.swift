@@ -27,6 +27,10 @@ class InvalidHiveView: UIView {
                 titleLabel.text = "Too far away!"
             case "Name":
                 titleLabel.text = "Hive names can only contain letters, spaces, numbers and hyphens."
+            case "small":
+                titleLabel.text = "Too small!"
+            case "bothsmall":
+                titleLabel.text = "Too far away and too small!"
             default:
                 titleLabel.text = "Please try a different size/location or name."
             }
