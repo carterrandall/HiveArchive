@@ -172,13 +172,18 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
             
             Alamofire.upload(multipartFormData: { (multipart) in
                 multipart.append(uploadData, withName: "file", fileName: "\(filename).jpg", mimeType: "image/jpeg")
-                if self.captionView.taggedIds.count > 0 {
-                    let tags = self.captionView.taggedIds
-                    if let tdata = "\(tags)".data(using: .utf8) {
-                        multipart.append(tdata, withName: "taggedUsers")
+                if let captionView = self.captionView {
+                    if captionView.taggedIds.count > 0 {
+                        let tags = self.captionView.taggedIds
+//                        if let tdata = "\(tags)".data(using: .utf8) {
+//                            multipart.append(tdata, withName: "taggedUsers")
+//                        }
+
+                        let arrData = try! JSONSerialization.data(withJSONObject: tags, options: .prettyPrinted)
+                        multipart.append(arrData, withName: "taggedUsers")
                     }
                 }
-             
+               
             }, usingThreshold: UInt64.init(), to: url, method: .post, headers: header) { (encodingResult) in
                 
                 switch encodingResult {
