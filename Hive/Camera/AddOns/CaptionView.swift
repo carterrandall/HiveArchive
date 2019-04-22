@@ -175,6 +175,16 @@ class CaptionView: UIView, UITextViewDelegate {
     var previousEditingHeight: CGFloat = 0.0
     func textViewDidChange(_ textView: UITextView) {
         
+        if self.tagCollectionView != nil {
+            self.tagCollectionView.textDidChange(searchText: textView.text, tagging: self.isTagging)
+        }
+        
+        if isTagging && textView.text.last == " " {
+            self.endTagging()
+        } else if isTagging && textView.text.count == 0 {
+            self.endTagging()
+        }
+        
         self.sizeInEditingMode()
         
         checkDidAddCaption()
@@ -257,7 +267,6 @@ class CaptionView: UIView, UITextViewDelegate {
             return
         }
         
-      //  let w = (UIScreen.main.bounds.width - 100 / 2)
         toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 40))
         toolBar.barStyle = UIBarStyle.default
   

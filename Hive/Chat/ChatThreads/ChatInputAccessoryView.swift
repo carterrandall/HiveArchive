@@ -134,7 +134,6 @@ class ChatInputAccessoryView: UIView, UITextViewDelegate {
         if textView.text.isEmpty {
             textView.text = placeHolderText
             textView.textColor = .lightGray
-           // self.textView.sizeToFit()
             self.reloadInputViews()
             
         }
