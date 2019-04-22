@@ -8,14 +8,23 @@
 
 import UIKit
 
+protocol LocationSettingsCellDelegate: class {
+    func toggleGhost(ghost: Bool)
+    func showChooseFriends()
+}
+
 class LocationSettingsCell: UICollectionViewCell {
+    
+    weak var delegate: LocationSettingsCellDelegate?
     
     var ghost: Bool? {
         didSet {
             if let ghost = ghost, ghost {
+                self.chooseFriendsButton.isHidden = true
                 self.ghostSwitchControl.isOn = true
                 ghostDetailLabel.text = "Your location is not visible to anyone."
             } else {
+                self.chooseFriendsButton.isHidden = false
                 self.ghostSwitchControl.isOn = false
                 ghostDetailLabel.text = "Your location is visible to friends."
             }
@@ -114,8 +123,10 @@ class LocationSettingsCell: UICollectionViewCell {
             ghostDetailLabel.text = "Your location is not visible to anyone."
         } else {
             ghost = false
-            ghostDetailLabel.text = "Your location is visible to friends."
+            ghostDetailLabel.text = "Your location is visible to friends you choose."
         }
+        
+        self.delegate?.toggleGhost(ghost: ghost)
         
         let params = ["ghost": ghost] as [String: Bool]
         RequestManager().makeResponseRequest(urlString: "/Hive/api/toggleGhostMode", params: params) { (response) in
@@ -130,6 +141,20 @@ class LocationSettingsCell: UICollectionViewCell {
         view.backgroundColor = UIColor(white: 0, alpha: 0.1)
         return view
     }()
+    
+    lazy var chooseFriendsButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.tintColor = .mainRed()
+        button.setTitle("Choose Friends", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+        button.addTarget(self, action: #selector(handleChooseFriends), for: .touchUpInside)
+        button.titleLabel?.textAlignment = .left
+        return button
+    }()
+    
+    @objc fileprivate func handleChooseFriends() {
+        delegate?.showChooseFriends()
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -161,6 +186,9 @@ class LocationSettingsCell: UICollectionViewCell {
         
         addSubview(seperatorView)
         seperatorView.anchor(top: nil, left: titleLabel.leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 1)
+        
+        addSubview(chooseFriendsButton)
+        chooseFriendsButton.anchor(top: nil, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 16, paddingBottom: 8, paddingRight: 0, width: 0, height: 40)
         
         
     }

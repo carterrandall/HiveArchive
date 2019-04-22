@@ -60,17 +60,22 @@ class ProfilePostsControllerCell: UICollectionViewCell, UICollectionViewDataSour
     var privateButton: UIButton!
     var privateProfile: Bool? {
         didSet {
+            print("DID SET")
+            if self.privateButton != nil { return }
             if let pp = privateProfile, pp {
+                
                 privateButton = UIButton(type: .system)
                 privateButton.titleLabel?.lineBreakMode = .byWordWrapping
                 privateButton.titleLabel?.textAlignment = .center
                 privateButton.addTarget(self, action: #selector(handlePrivateAction), for: .touchUpInside)
-                let attributedTitle = NSMutableAttributedString(string: "This profile is private.", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+                
+                let grayAttributes: [NSAttributedString.Key:Any] = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+                let attributedTitle = NSMutableAttributedString(string: "This profile is private.", attributes: grayAttributes)
     
                 if let user = self.user {
                     let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.mainRed()]
                     if user.friendStatus == 1 {
-                        attributedTitle.append(NSAttributedString(string: "\nWhen \(user.username) accepts your request you will be able to see their posts.", attributes: attributes))
+                        attributedTitle.append(NSAttributedString(string: "\nWhen \(user.username) accepts your request you will be able to see their posts.", attributes: grayAttributes))
                         privateButton.isEnabled = false
                         privateButton.setAttributedTitle(attributedTitle, for: .disabled)
                     } else if user.friendStatus == 2 {
@@ -93,29 +98,46 @@ class ProfilePostsControllerCell: UICollectionViewCell, UICollectionViewDataSour
     }
     
     @objc fileprivate func handlePrivateAction() {
-        print("PRIVATE ACTION")
-        
-        privateButton.isEnabled = false
-        
-        delegate?.privateProfileAction()
-        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        let attributedTitle = NSMutableAttributedString(string: "This profile is private.", attributes: attributes)
-        
-        if let user = self.user {
-            if user.friendStatus == 2 {
-                //print("remove that shit")
-            } else if user.friendStatus == 3 {
-                attributedTitle.append(NSAttributedString(string: "\nWhen \(user.username) accepts your request you will be able to see their posts.", attributes: attributes))
-            }
+        DispatchQueue.main.async {
+            self.privateButton.isEnabled = false
+            self.delegate?.privateProfileAction()
         }
-        
-        privateButton.setAttributedTitle(attributedTitle, for: .disabled)
-       
     }
     
-    func showPostsOnBecomingFriends() {
-        
+    func didChangeFriendStatus(status: Int) {
+        self.user?.friendStatus = status
+        guard self.privateButton != nil else { return }
+        if status == 0 {
+            //user accepted request on private profile
+            
+            self.privateButton.removeFromSuperview()
+            self.privateButton = nil
+            self.paginatePosts(onBecomingFriends: true)
+            
+        } else if status == 1 {
+            //user sent request on private profile
+            let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+            let attributedTitle = NSMutableAttributedString(string: "This profile is private.", attributes: attributes)
+            
+            if let user = self.user {
+                attributedTitle.append(NSAttributedString(string: "\nWhen \(user.username) accepts your request you will be able to see their posts.", attributes: attributes))
+                
+            }
+            self.privateButton.isEnabled = false
+            self.privateButton.setAttributedTitle(attributedTitle, for: .disabled)
+        } else if status == 3 {
+            //user cancenlled request on a private profiel
+            let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+            let attributedTitle = NSMutableAttributedString(string: "This profile is private.", attributes: attributes)
+            
+            if let user = self.user {
+                privateButton.isEnabled = true
+                attributedTitle.append(NSAttributedString(string: "\nSend \(user.username) a friend request to see their posts.", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.mainRed()]))
+            }
+            privateButton.setAttributedTitle(attributedTitle, for: .normal)
+        }
     }
+
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -169,10 +191,16 @@ class ProfilePostsControllerCell: UICollectionViewCell, UICollectionViewDataSour
         }
     }
     
-    fileprivate func paginatePosts() {
+    fileprivate func paginatePosts(onBecomingFriends:Bool=false) {
         print("PAGINATING POSTS ON PROFILE")
         guard let uid = self.user?.uid else {print("no uid"); return }
-        let params = ["UID": uid, "lastPost": self.posts.last?.creationDate.timeIntervalSince1970 ?? 0] as [String: Any]
+        var params: [String: Any]!
+        if onBecomingFriends {
+            params = ["UID": uid]
+        } else {
+            params = ["UID": uid, "lastPost": self.posts.last?.creationDate.timeIntervalSince1970 ?? 0]
+        }
+        
         MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/paginatePostsOnProfile", params: params) { (json, sc) in
             guard let json = json as? [String: Any] else { return }
             if let posts = json["Posts"] as? [[String: Any]] {

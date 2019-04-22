@@ -42,6 +42,7 @@ class SettingsController: UICollectionViewController, UICollectionViewDelegateFl
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        if whiteView != nil { return }
         whiteView = UIView()
         whiteView.backgroundColor = .white
         view.addSubview(whiteView)
@@ -114,6 +115,7 @@ class SettingsController: UICollectionViewController, UICollectionViewDelegateFl
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: locationCellId, for: indexPath) as! LocationSettingsCell
             cell.ghost = self.settings?.ghost
             cell.privateProfile = self.settings?.privateProfile
+            cell.delegate = self
             return cell
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: notificationsCellId, for: indexPath) as! NotificationsSettingsCell
@@ -145,7 +147,12 @@ class SettingsController: UICollectionViewController, UICollectionViewDelegateFl
     
         switch indexPath.item {
         case 0:
-            return CGSize(width: view.frame.width, height: 144)
+            if self.settings?.ghost ?? true {
+                return CGSize(width: view.frame.width, height: 144)
+            } else {
+                return CGSize(width: view.frame.width, height: 180)
+            }
+            
         case 1:
             return CGSize(width: view.frame.width, height: 180)
         case 2:
@@ -203,10 +210,21 @@ class SettingsController: UICollectionViewController, UICollectionViewDelegateFl
         tosController.wasPushed = true
         self.navigationController?.pushViewController(tosController, animated: true)
     }
-
+    
 }
 
-extension SettingsController: MyInfoSettingsCellDelegate, EditNameControllerDelegate, BlockedCellDelegate, TosSettingsCellDelegate {
+extension SettingsController: MyInfoSettingsCellDelegate, EditNameControllerDelegate, BlockedCellDelegate, TosSettingsCellDelegate, LocationSettingsCellDelegate {
+    
+    func toggleGhost(ghost: Bool) {
+        self.settings?.ghost = ghost
+        self.collectionView.reloadData()
+    }
+    
+    func showChooseFriends() {
+        print("showing")
+        let chooseFriendsController = ChooseFriendsController(collectionViewLayout: UICollectionViewFlowLayout())
+        self.navigationController?.pushViewController(chooseFriendsController, animated: true)
+    }
     
     func openTOScell() {
         openTOS()

@@ -30,7 +30,6 @@ class CommentCell: UITableViewCell {
     
             profileImageView.profileImageCache(url: comment.user.profileImageUrl, userId: comment.user.uid)
             
-            
         }
     }
     

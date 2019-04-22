@@ -346,6 +346,9 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
         if shouldShowSearchedUsers {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: sharePostCellId, for: indexPath) as! SharePostCell
             if indexPath.item == self.filteredFriends.count - 1 && !isFinishedPagingFriends {
+                if self.filteredFriends.count < 10 {
+                    self.lastIndex = 0
+                }
                 self.paginateSearchedFriends()
             }
             

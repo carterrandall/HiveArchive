@@ -17,6 +17,7 @@
 import UIKit
 import AVFoundation
 import CallKit
+import Photos
 
 class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVCaptureFileOutputRecordingDelegate, UIGestureRecognizerDelegate, CXCallObserverDelegate {
     
@@ -140,13 +141,26 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     
     @objc fileprivate func handleCameraRoll () {
         print("remeber permissions here")
-        let layout = UICollectionViewFlowLayout()
-        let photoSelectionController = PhotoSelectionController(collectionViewLayout: layout)
-        photoSelectionController.isFromCamera = true
-        //photoSelectionController.delegate = self
-        let photoSelectionNavController = UINavigationController(rootViewController: photoSelectionController)
-        self.present(photoSelectionNavController, animated: true, completion: nil)
+        checkPhotoAuthStatus { (result) in
+            DispatchQueue.main.async {
+                if result {
+                    let layout = UICollectionViewFlowLayout()
+                    let photoSelectionController = PhotoSelectionController(collectionViewLayout: layout)
+                    photoSelectionController.isFromCamera = true
+                    photoSelectionController.delegate = self
+                    let photoSelectionNavController = UINavigationController(rootViewController: photoSelectionController)
+                    self.present(photoSelectionNavController, animated: true, completion: nil)
+                } else {
+                    let permissionsViewController = PhotoLocationPermissionsViewController()
+                    permissionsViewController.isPhotos = true
+                    let permissionsNavController = UINavigationController(rootViewController: permissionsViewController)
+                    self.present(permissionsNavController, animated: true, completion: nil)
+                }
+            }
+        }
+        
     }
+    
     
     let filterButton: UIButton = {
         let button = UIButton(type: .system)
@@ -206,6 +220,11 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dismissButtonView)
         navigationController?.navigationBar.tintColor = .white
         
+//        let iv = UIImageView(image: UIImage(named: "indian"))
+//        iv.contentMode = .scaleAspectFill
+//        iv.frame = view.bounds
+//        view.addSubview(iv)
+        
         let topView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         view.addSubview(topView)
         topView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
@@ -233,7 +252,6 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         view.addSubview(rightStackView)
         rightStackView.anchor(top: nil, left: hiveCameraButton.rightAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 20, width: 0, height: 40)
         rightStackView.centerYAnchor.constraint(equalTo: hiveCameraButton.centerYAnchor).isActive = true
-
         
         let leftStackView = UIStackView(arrangedSubviews: [switchCameraButton, filterButton])
         leftStackView.axis = .horizontal
@@ -241,7 +259,36 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         view.addSubview(leftStackView)
         leftStackView.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: hiveCameraButton.leftAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 20, width: 0, height: 40)
         leftStackView.centerYAnchor.constraint(equalTo: hiveCameraButton.centerYAnchor).isActive = true
-
+        
+      //  self.setupCameraRollButton()
+    }
+    
+    fileprivate func setupCameraRollButton() {
+        if PHPhotoLibrary.authorizationStatus() == .authorized {
+            
+            let firstPhotoOptions = PHFetchOptions()
+            firstPhotoOptions.fetchLimit = 1
+            firstPhotoOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+            let fetchResult = PHAsset.fetchAssets(with: firstPhotoOptions)
+            if fetchResult.count > 0 {
+                let requestOptions = PHImageRequestOptions()
+                requestOptions.isSynchronous = true
+                PHImageManager.default().requestImage(for: fetchResult.object(at: 0) as PHAsset, targetSize: CGSize(width: 100, height: 100), contentMode: .aspectFill, options: requestOptions) { (image, _) in
+                    DispatchQueue.main.async {
+                        
+                        self.cameraRollButton.imageView?.translatesAutoresizingMaskIntoConstraints = false
+                        self.cameraRollButton.imageView?.widthAnchor.constraint(equalToConstant: 40).isActive = true
+                        self.cameraRollButton.imageView?.layer.borderWidth = 1
+                        self.cameraRollButton.imageView?.layer.borderColor = UIColor.white.cgColor
+                        self.cameraRollButton.imageView?.layer.cornerRadius = 20
+                        self.cameraRollButton.imageView?.clipsToBounds = true
+                        self.cameraRollButton.imageView?.contentMode = .scaleAspectFill
+                        self.cameraRollButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+                    }
+                }
+            }
+            
+        }
     }
     
     @objc fileprivate func handleToggleTorch() {
@@ -930,15 +977,44 @@ extension HiveCameraController: HiveCameraButtonDelegate {
         removeAnimations()
         
     }
+    
+    fileprivate func checkPhotoAuthStatus(completion: @escaping(Bool) -> ()) {
+        var result = false
+        switch PHPhotoLibrary.authorizationStatus(){
+        case .authorized:
+            result = true
+            completion(result)
+            break
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization { (status) in
+                if status == PHAuthorizationStatus.authorized {
+                    result = true
+                } else {
+                    result = false
+                }
+                completion(result)
+            }
+        case .denied:
+            result = false
+            completion(result)
+        case .restricted:
+            result = false
+            completion(result)
+        @unknown default:
+            completion(false)
+        }
+    }
+    
 }
 
-extension HiveCameraController: PreviewPhotoControllerDelegate, VideoPlaybackControllerDelegate {
+extension HiveCameraController: PreviewPhotoControllerDelegate, VideoPlaybackControllerDelegate, PhotoSelectionControllerDelegate {
     
     func endSessionAfterShare() {
         self.endSession()
     }
     
 }
+
 
 
 

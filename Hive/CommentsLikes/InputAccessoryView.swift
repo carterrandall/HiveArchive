@@ -8,14 +8,19 @@
 
 import UIKit
 
-protocol InputAccessoryViewDelegate {
-    func didSubmit(for text: String)
+protocol InputAccessoryViewDelegate: class {
+    func didSubmit(for text: String, taggedUids: [Int])
     func updateTableViewForText(additionalTextViewHeight: CGFloat)
+    func tag(add: Bool)
 }
 
 class InputAccessoryView: UIView, UITextViewDelegate {
     
-    var delegate: InputAccessoryViewDelegate?
+    weak var delegate: InputAccessoryViewDelegate?
+    
+    var tagCollectionView: TagCollectionView!
+    
+    var isTagging: Bool = false
     
     var placeHolderText: String! {
         didSet {
@@ -39,7 +44,6 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         
         self.textView.sizeToFit()
         self.reloadInputViews()
-        
     }
     
     let sendButton: UIButton = {
@@ -61,11 +65,57 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         return tv
     }()
     
+    let tagButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("@", for: .normal)
+        button.setTitleColor(UIColor.mainRed(), for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20)
+        button.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 17
+        button.backgroundColor = .white
+        button.addTarget(self, action: #selector(handleTag), for: .touchUpInside)
+        return button
+    }()
+    
+    var tagCollectionViewHeight: NSLayoutConstraint!
+    @objc fileprivate func handleTag() {
+        
+        if self.isTagging { return }
+        
+        guard let text = textView.text else { return }
+        if text.count == 0 || text == placeHolderText {
+             textView.text = "@"
+        } else {
+             textView.text = text + (text.last == " " ? "@" : " @")
+        }
+        
+        self.updateOnTextViewChange()
+        
+        self.startTagging()
+       
+    }
+    
     var textViewHeightAnchor: NSLayoutConstraint!
     var contentHeight: CGFloat?
     func textViewDidChange(_ textView: UITextView) {
+      
+        if self.tagCollectionView != nil {
+            self.tagCollectionView.textDidChange(searchText: textView.text, tagging: self.isTagging)
+        }
         
+        updateOnTextViewChange()
         
+        if isTagging && textView.text.last == " " {
+            self.endTagging()
+        } else if isTagging && textView.text.count == 0 {
+            self.endTagging()
+        }
+        
+    }
+    
+    
+    func updateOnTextViewChange() {
         if self.contentHeight == nil {
             self.contentHeight = textView.contentSize.height
         }
@@ -89,7 +139,6 @@ class InputAccessoryView: UIView, UITextViewDelegate {
             
             let contentSize = textView.sizeThatFits(CGSize(width: textView.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
             self.frame.size.height = contentSize.height + 16
-            
             self.textView.reloadInputViews()
             
             if self.textViewHeightAnchor != nil {
@@ -103,10 +152,7 @@ class InputAccessoryView: UIView, UITextViewDelegate {
                     delegate?.updateTableViewForText(additionalTextViewHeight: currentTextViewHeight - previousTextViewHeight)
                 }
             }
-            
         }
-        
-        
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -114,14 +160,12 @@ class InputAccessoryView: UIView, UITextViewDelegate {
             textView.text = nil
             textView.textColor = .black
         }
-        
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
             textView.text = placeHolderText
             textView.textColor = .lightGray
-            
         }
     }
     
@@ -133,7 +177,7 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         super.init(frame: frame)
         
         autoresizingMask = .flexibleHeight
-        
+
         backgroundColor = .clear
         
         textView.delegate = self
@@ -146,14 +190,18 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         backgroundView.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
         backgroundView.layer.borderWidth = 1
         backgroundView.layer.cornerRadius = (frame.height - 16) / 2
-        
+    
         addSubview(textView)
-        textView.anchor(top: nil, left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: rightAnchor, paddingTop: 8, paddingLeft: 12, paddingBottom: 8, paddingRight: 62, width: 0, height: 0)
+        print("DO I WANT TOP ANCHOR HERE?")
+        textView.anchor(top: nil, left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 56, paddingBottom: 8, paddingRight: 50, width: 0, height: 0)
         
         addSubview(sendButton)
         sendButton.anchor(top: nil, left: nil, bottom: textView.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: -8, paddingRight: 12, width: 50, height: 50)
         
-        backgroundView.anchor(top: textView.topAnchor, left: leftAnchor, bottom: textView.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 8, paddingBottom: 0, paddingRight: 8, width: 0, height: 0)
+        backgroundView.anchor(top: textView.topAnchor, left: textView.leftAnchor, bottom: textView.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: -4, paddingBottom: 0, paddingRight: 8, width: 0, height: 0)
+        
+        addSubview(tagButton)
+        tagButton.anchor(top: nil, left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: nil, paddingTop: 0, paddingLeft: 8, paddingBottom: 8, paddingRight: 0, width: 34, height: 34)
         
         let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeGesture.direction = .down
@@ -161,6 +209,7 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         
     }
     
+
     @objc fileprivate func handleSwipe() {
         self.textView.endEditing(true)
     }
@@ -173,7 +222,7 @@ class InputAccessoryView: UIView, UITextViewDelegate {
             return
         }
         
-        delegate?.didSubmit(for: text)
+        delegate?.didSubmit(for: text, taggedUids: Array(Set(self.tagCollectionView.selectedIdToUserDict.values)))
         
     }
     
@@ -182,3 +231,68 @@ class InputAccessoryView: UIView, UITextViewDelegate {
     }
 }
 
+extension InputAccessoryView: TagCollectionViewDelegate {
+    
+    func didSelectName(username: String) {
+       
+        updateOnTextViewChange()
+        
+        endTagging()
+        
+        guard let index = textView.text.lastIndex(of: "@") else { return }
+        let substring = String(textView.text[...index])
+        let newText = substring + "\(username) "
+        self.textView.text = newText
+        
+    }
+    
+    func didDeselectName(username: String) {
+        var text = textView.text.replacingOccurrences(of: "@\(username)", with: "")
+        text = text.replacingOccurrences(of: "  @", with: " @")
+        textView.text = text
+        
+    }
+    
+    func updateText(text: String) {
+        self.textView.text = text
+    }
+    
+    func endTagging() {
+        DispatchQueue.main.async {
+            self.isTagging = false
+            self.delegate?.tag(add: false)
+            self.tagCollectionView.isHidden = true
+            self.tagCollectionView.shouldShowSearchedUsers = false
+            self.tagCollectionView.reloadData()
+            UIView.animate(withDuration: 0.0, animations: {
+                self.layoutIfNeeded()
+            })
+        }
+    }
+    
+    func startTagging() {
+        self.isTagging = true
+        if tagCollectionView == nil {
+            DispatchQueue.main.async {
+                self.delegate?.tag(add: true)
+            }
+            
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .horizontal
+            
+            tagCollectionView = TagCollectionView(frame: .zero, collectionViewLayout: layout)
+            tagCollectionView.tagDelegate = self
+            addSubview(tagCollectionView)
+            tagCollectionView.anchor(top: topAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+            tagCollectionViewHeight = tagCollectionView.heightAnchor.constraint(equalToConstant: 40)
+            tagCollectionViewHeight.isActive = true
+            
+        } else {
+            
+            self.tagCollectionView.isHidden = false
+            DispatchQueue.main.async {
+                self.delegate?.tag(add: true)
+            }
+        }
+    }
+}

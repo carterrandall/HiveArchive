@@ -62,8 +62,6 @@ class PhotoSelectionHeader: UICollectionViewCell, UIScrollViewDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = .black
-        
         scrollView.delegate = self
         addSubview(scrollView)
         scrollView.frame = self.bounds

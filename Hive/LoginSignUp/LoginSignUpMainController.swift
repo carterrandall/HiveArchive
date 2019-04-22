@@ -43,7 +43,12 @@ class LoginSignUpMainController: UICollectionViewController, UICollectionViewDel
         setupViews()
         setupCollectionView()
         
+        
     }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        self.showTutorial()
+//    }
     
     override var prefersStatusBarHidden: Bool { return true }
     
@@ -149,6 +154,17 @@ class LoginSignUpMainController: UICollectionViewController, UICollectionViewDel
 }
 
 extension LoginSignUpMainController: SignUpControllerCellDelegate, LoginControllerCellDelegate {
+    
+    func showTutorial() {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let tutorialController = TutorialController(collectionViewLayout: layout)
+        tutorialController.modalTransitionStyle = .crossDissolve
+        tutorialController.modalPresentationStyle = .overFullScreen
+        tutorialController.delegate = self
+        self.present(tutorialController, animated: true, completion: nil)
+        
+    }
  
     func showCountryCode(controller: CountryCodeController) {
         let countryCodeNavController = UINavigationController(rootViewController: controller)
@@ -336,4 +352,10 @@ extension LoginSignUpMainController: LoginSignUpAlertViewDelegate {
         }
     }
 
+}
+
+extension LoginSignUpMainController: TutorialControllerDelegate {
+    func completedTutorial() {
+        self.loggedInSuccessfully()
+    }
 }
