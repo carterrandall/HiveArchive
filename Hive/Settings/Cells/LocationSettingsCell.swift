@@ -149,6 +149,7 @@ class LocationSettingsCell: UICollectionViewCell {
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.addTarget(self, action: #selector(handleChooseFriends), for: .touchUpInside)
         button.titleLabel?.textAlignment = .left
+        button.isHidden = true
         return button
     }()
     

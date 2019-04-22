@@ -84,7 +84,6 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         return button
     }()
     
-    var tagCollectionViewHeight: NSLayoutConstraint!
     @objc fileprivate func handleTag() {
         
         if self.isTagging { return }
@@ -279,10 +278,12 @@ extension InputAccessoryView: TagCollectionViewDelegate {
         var text = textView.text.replacingOccurrences(of: "@\(username)", with: "")
         text = text.replacingOccurrences(of: "  @", with: " @")
         textView.text = text
+        updateOnTextViewChange()
     }
     
     func updateText(text: String) {
         self.textView.text = text
+        updateOnTextViewChange()
     }
     
     func endTagging() {
@@ -313,9 +314,8 @@ extension InputAccessoryView: TagCollectionViewDelegate {
             tagCollectionView = TagCollectionView(frame: .zero, collectionViewLayout: layout)
             tagCollectionView.tagDelegate = self
             addSubview(tagCollectionView)
-            tagCollectionView.anchor(top: topAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
-            tagCollectionViewHeight = tagCollectionView.heightAnchor.constraint(equalToConstant: 40)
-            tagCollectionViewHeight.isActive = true
+            tagCollectionView.anchor(top: topAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 40)
+           
             
         } else {
             
