@@ -152,7 +152,7 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     static let updateForNewPostNotificationName = NSNotification.Name("updateForNewPost")
     func sharePhoto(image: UIImage) {
         
-        registerBackgroundTask()
+        
         
         var croppedImage: UIImage?
         if didAddCaption {
@@ -175,10 +175,6 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
                 if let captionView = self.captionView {
                     if captionView.taggedIds.count > 0 {
                         let tags = self.captionView.taggedIds
-//                        if let tdata = "\(tags)".data(using: .utf8) {
-//                            multipart.append(tdata, withName: "taggedUsers")
-//                        }
-
                         let arrData = try! JSONSerialization.data(withJSONObject: tags, options: .prettyPrinted)
                         multipart.append(arrData, withName: "taggedUsers")
                     }
@@ -249,6 +245,7 @@ extension PreviewPhotoController: CameraPreviewHUDDelegate {
 
     func handleShare() {
         
+        self.registerBackgroundTask()
         
         self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: {
             StoreReviewHelper.checkAndAskForReview()

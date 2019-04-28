@@ -10,6 +10,7 @@
 		45A8B8AE3BC8DDB0E72006ED /* Pods_Hive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4598572E1E536FC8CCC98FC /* Pods_Hive.framework */; };
 		6DAC002C226BE532009112C9 /* testicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAC002B226BE532009112C9 /* testicle.swift */; };
 		6DF4958A225D409B00CC0FFB /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DF49589225D409B00CC0FFB /* Review.swift */; };
+		B1028BD8227505BA00648E3B /* NearbyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1028BD7227505BA00648E3B /* NearbyController.swift */; };
 		B1063A8A223ACECF00832BB9 /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1063A89223ACECF00832BB9 /* RequestManager.swift */; };
 		B1071DEB21BD8718009E60C3 /* ChatBarCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1071DEA21BD8718009E60C3 /* ChatBarCollectionView.swift */; };
 		B1071DEE21BD8747009E60C3 /* ChatBarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1071DED21BD8747009E60C3 /* ChatBarCell.swift */; };
@@ -153,6 +154,7 @@
 		6DF49589225D409B00CC0FFB /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		8006928360522C4065114081 /* Pods-Hive.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hive.release.xcconfig"; path = "Pods/Target Support Files/Pods-Hive/Pods-Hive.release.xcconfig"; sourceTree = "<group>"; };
 		86175C47CEE565F22A4CF7DE /* Pods-Hive.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hive.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Hive/Pods-Hive.debug.xcconfig"; sourceTree = "<group>"; };
+		B1028BD7227505BA00648E3B /* NearbyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyController.swift; sourceTree = "<group>"; };
 		B1063A89223ACECF00832BB9 /* RequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestManager.swift; sourceTree = "<group>"; };
 		B1071DEA21BD8718009E60C3 /* ChatBarCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBarCollectionView.swift; sourceTree = "<group>"; };
 		B1071DED21BD8747009E60C3 /* ChatBarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBarCell.swift; sourceTree = "<group>"; };
@@ -320,6 +322,14 @@
 				C4598572E1E536FC8CCC98FC /* Pods_Hive.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B1028BD62275059D00648E3B /* ExploreNearby */ = {
+			isa = PBXGroup;
+			children = (
+				B1028BD7227505BA00648E3B /* NearbyController.swift */,
+			);
+			path = ExploreNearby;
 			sourceTree = "<group>";
 		};
 		B1071DEC21BD871D009E60C3 /* ChatThreads */ = {
@@ -628,6 +638,7 @@
 			children = (
 				6D652E002257CAEB0000FF58 /* Hive.entitlements */,
 				B1FA2A8821A1D6DC00B4EAE2 /* Main */,
+				B1FA2AAF21A1D70A00B4EAE2 /* Map */,
 				B123263321FCF1EE00A51B88 /* Permission controllers */,
 				B1FA2AD521A1D73500B4EAE2 /* LoginSignUp */,
 				B119FD6F22309F1600FEB8F5 /* PasswordRecovery */,
@@ -657,7 +668,7 @@
 				B1FA2A9321A1D6DC00B4EAE2 /* AppDelegate.swift */,
 				B1FA2A9221A1D6DC00B4EAE2 /* MainTabBarController.swift */,
 				B11DA0102210EF00007F85D0 /* Reachability.swift */,
-				B1FA2AAF21A1D70A00B4EAE2 /* Map */,
+				B1028BD62275059D00648E3B /* ExploreNearby */,
 				B1FA2A8D21A1D6DC00B4EAE2 /* Keychain */,
 				B1FA2A8921A1D6DC00B4EAE2 /* Models */,
 				B1FA2A8F21A1D6DC00B4EAE2 /* Extensions */,
@@ -1006,6 +1017,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1028BD8227505BA00648E3B /* NearbyController.swift in Sources */,
 				B1FA2B2721A1D73600B4EAE2 /* HiveCameraButton.swift in Sources */,
 				B1071E2721CAE67D009E60C3 /* NotificationHeaderView.swift in Sources */,
 				B123264521FD221A00A51B88 /* HiveMemberCell.swift in Sources */,

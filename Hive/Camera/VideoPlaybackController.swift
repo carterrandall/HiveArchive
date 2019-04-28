@@ -327,6 +327,8 @@ extension VideoPlaybackController: CameraPreviewHUDDelegate {
     
     func handleShare() {
         
+        self.registerBackgroundTask()
+        
         self.avPlayer?.pause()
         self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: {
             self.delegate?.endSessionAfterShare()
@@ -393,10 +395,7 @@ extension VideoPlaybackController: CameraPreviewHUDDelegate {
     
     func shareVideo(videoURL: URL) {
         
-        registerBackgroundTask()
-        
         DispatchQueue.main.async {
-            print(self.printFileSize(url: videoURL), "VIDEO FILE SIZE")
             
             let filename = NSUUID().uuidString
             guard let thumbnail = videoURL.getThumnail() else { print("BAD TRHUMB"); return }
@@ -408,10 +407,7 @@ extension VideoPlaybackController: CameraPreviewHUDDelegate {
                     if let captionView = self.captionView {
                         if captionView.taggedIds.count > 0 {
                             let tags = self.captionView.taggedIds
-//                            if let tdata = "\(tags)".data(using: .utf8) {
-//                                multipart.append(tdata, withName: "taggedUsers")
-//                            }
-//
+
                             let arrData = try! JSONSerialization.data(withJSONObject: tags, options: .prettyPrinted)
                             multipart.append(arrData, withName: "taggedUsers")
                             

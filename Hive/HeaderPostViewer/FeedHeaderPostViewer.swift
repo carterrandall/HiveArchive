@@ -894,7 +894,6 @@ extension FeedHeaderPostViewer: PostViewerCellDelegate, CommentsLikesControllerD
         
         self.indexPath = indexPath
         
-        
     }
     
     func didCommentOrDelete(index: Int, increment: Int) {
@@ -917,7 +916,6 @@ extension FeedHeaderPostViewer: PostViewerCellDelegate, CommentsLikesControllerD
         self.present(sharePostNavController, animated: true, completion: nil)
         self.endPlayingVideos()
     }
-
     
 }
 

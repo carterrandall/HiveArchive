@@ -104,7 +104,6 @@ class CaptionView: UIView, UITextViewDelegate {
             textView.text = text + (text.last == " " ? "@" : " @")
         }
         
-        
         self.sizeInEditingMode()
         
         self.startTagging()
@@ -378,45 +377,34 @@ class CaptionView: UIView, UITextViewDelegate {
         if self.isTagging { return }
         self.isTagging = true
         if tagCollectionView == nil {
-            DispatchQueue.main.async {
-                self.insertTag(insert: true)
-            }
-            
-            let layout = UICollectionViewFlowLayout()
-            layout.scrollDirection = .horizontal
-            
-            tagCollectionView = TagCollectionView(frame: .zero, collectionViewLayout: layout)
-            tagCollectionView.tagDelegate = self
-            
-            addSubview(tagCollectionView)
-            tagCollectionView.anchor(top: nil, left: leftAnchor, bottom: textView.topAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 40)
+            print("2")
            
+            DispatchQueue.main.async {
+                let layout = UICollectionViewFlowLayout()
+                layout.scrollDirection = .horizontal
+                
+                self.tagCollectionView = TagCollectionView(frame: .zero, collectionViewLayout: layout)
+                self.tagCollectionView.tagDelegate = self
+                
+                self.addSubview(self.tagCollectionView)
+                self.tagCollectionView.anchor(top: nil, left: self.leftAnchor, bottom: self.textView.topAnchor, right: self.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 40)
+            }
             
         } else {
-            
+            print("1")
             self.tagCollectionView.isHidden = false
-            DispatchQueue.main.async {
-                self.insertTag(insert: true)
-            }
         }
     }
-    
-    func insertTag(insert: Bool) {
-        print("insert", insert)
-    }
+ 
     
     
     func endTagging() {
         guard tagCollectionView != nil && self.isTagging else { return }
         DispatchQueue.main.async {
             self.isTagging = false
-            self.insertTag(insert: false)
             self.tagCollectionView.isHidden = true
             self.tagCollectionView.shouldShowSearchedUsers = false
             self.tagCollectionView.reloadData()
-            UIView.animate(withDuration: 0.0, animations: {
-                self.layoutIfNeeded()
-            })
         }
     }
     

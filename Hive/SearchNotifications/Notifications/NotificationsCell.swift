@@ -31,35 +31,26 @@ class NotificationsCell: UITableViewCell {
             
             switch notification.type {
             case 1:
-                
                 textLabelToPostLeftAnchor.isActive = true
                 textLabelToRightAnchor.isActive = false
                 postView.isHidden = false
                 attributedString.append(NSAttributedString(string: " secret liked your post.", attributes: attributes))
-                
                 if let post = notification.post {
                     postView.postImageCache(url: post.imageUrl, postId: post.id)
                 }
-                
             case 2:
                 textLabelToPostLeftAnchor.isActive = true
                 textLabelToRightAnchor.isActive = false
                 postView.isHidden = false
-                
                 attributedString.append(NSAttributedString(string: " commented on your post: '\(notification.message)'." , attributes: attributes))
-                
                 if let post = notification.post {
                     postView.postImageCache(url: post.imageUrl, postId: post.id)
                 }
-                
             case 3:
-                
                 textLabelToPostLeftAnchor.isActive = false
                 textLabelToRightAnchor.isActive = true
                 postView.isHidden = true
-                
                 attributedString.append(NSAttributedString(string: " accepted your friend request.", attributes: attributes))
-                
             case 4:
                 textLabelToPostLeftAnchor.isActive = true
                 textLabelToRightAnchor.isActive = false
@@ -76,7 +67,6 @@ class NotificationsCell: UITableViewCell {
                 if let post = notification.post {
                     postView.postImageCache(url: post.imageUrl, postId: post.id)
                 }
-                
             default:
                 break
             }

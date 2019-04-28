@@ -70,7 +70,7 @@ class RequestManager {
                     }
                 } else {
                     //bad json
-                    print("bad jsonNNNNN", data.result.value)
+                    print("bad json", data.result.value as Any)
                     self.checkConnectivityHandleErrors(response: data.response)
                 }
                 
