@@ -141,10 +141,8 @@ class HomeFeedControllerCell: UICollectionViewCell, UICollectionViewDataSource, 
                 self.noPostsStackView.removeFromSuperview()
                 self.noPostsStackView = nil
                 print("REMOVED IT")
-            } else {
-                print("NIL")
             }
-            print(json.count, "HOME FEED JSON OCUNT")
+            
             json.forEach({ (snapshot) in
                
                 var post = Post(dictionary: snapshot)
@@ -400,7 +398,6 @@ class HomeFeedControllerCell: UICollectionViewCell, UICollectionViewDataSource, 
         noPostsLabel.textAlignment = .center
         noPostsLabel.textColor = .darkGray
         
-        
         let detailLabel = UILabel()
         detailLabel.text = "Add friends or share something to see fresh posts here."
         detailLabel.textAlignment = .center
@@ -416,9 +413,7 @@ class HomeFeedControllerCell: UICollectionViewCell, UICollectionViewDataSource, 
         noPostsStackView.anchor(top: nil, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 20, width: 0, height: 0)
         noPostsStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
-        
     }
-    
 
     var newPostsButton: UIButton!
     fileprivate func insertNewPostsButton(count: Int) {
@@ -533,7 +528,6 @@ extension HomeFeedControllerCell: CommentsLikesControllerDelegate {
                 self.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
             }
         }
-        
     }
     
 }

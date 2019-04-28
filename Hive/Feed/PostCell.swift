@@ -73,6 +73,19 @@ class PostCell: UICollectionViewCell, UIScrollViewDelegate {
         }
     }
     
+    var whiteTint: Bool? {
+        didSet {
+            if let whiteTint = whiteTint, whiteTint {
+                self.hiveNameLabel.textColor = .white
+                self.usernameLabel.textColor = .white
+                self.timeOfPostLabel.textColor = .white
+                self.shareButton.tintColor = .white
+                self.commentLabel.textColor = .white
+                self.commentButton.tintColor = .white
+            }
+        }
+    }
+    
     var timeShape: CAShapeLayer!
     fileprivate func drawTimeLine(secondsSinceNow: Double) {
         let hoursSinceNow = secondsSinceNow / 3600
@@ -290,8 +303,7 @@ class PostCell: UICollectionViewCell, UIScrollViewDelegate {
             }
             
         }
-        
-        backgroundColor = .white
+    
         setupCellViews()
         
     }

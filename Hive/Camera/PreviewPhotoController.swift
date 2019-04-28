@@ -152,7 +152,7 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     static let updateForNewPostNotificationName = NSNotification.Name("updateForNewPost")
     func sharePhoto(image: UIImage) {
         
-        registerBackgroundTask()
+        
         
         var croppedImage: UIImage?
         if didAddCaption {
@@ -245,6 +245,7 @@ extension PreviewPhotoController: CameraPreviewHUDDelegate {
 
     func handleShare() {
         
+        self.registerBackgroundTask()
         
         self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: {
             StoreReviewHelper.checkAndAskForReview()

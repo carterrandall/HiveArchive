@@ -327,6 +327,8 @@ extension VideoPlaybackController: CameraPreviewHUDDelegate {
     
     func handleShare() {
         
+        self.registerBackgroundTask()
+        
         self.avPlayer?.pause()
         self.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: {
             self.delegate?.endSessionAfterShare()
@@ -393,10 +395,7 @@ extension VideoPlaybackController: CameraPreviewHUDDelegate {
     
     func shareVideo(videoURL: URL) {
         
-        registerBackgroundTask()
-        
         DispatchQueue.main.async {
-            print(self.printFileSize(url: videoURL), "VIDEO FILE SIZE")
             
             let filename = NSUUID().uuidString
             guard let thumbnail = videoURL.getThumnail() else { print("BAD TRHUMB"); return }

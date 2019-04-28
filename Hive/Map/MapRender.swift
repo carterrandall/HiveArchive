@@ -25,7 +25,6 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
     var hiveCollectionViewBottomAnchor: NSLayoutConstraint!
     var createHiveMenuBarTopAnchor: NSLayoutConstraint!
 
-
     let hiveCollectionView: UICollectionView = {
         let flowLayout = ZoomAndSnapFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
@@ -302,8 +301,11 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
         }()
         
         let searchButton = UIBarButtonItem(customView: customView)
-        navigationItem.rightBarButtonItem = searchButton
         
+        let nearbyButton = UIBarButtonItem(image: UIImage(named: "eye")?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(handleNearby))
+        
+        navigationItem.rightBarButtonItems = [searchButton, nearbyButton]
+        print(MapRender.mapView.locationManager.authorizationStatus.rawValue, "AFUCK MUSLIMS ")
         navigationController?.navigationBar.tintColor = .black
         
         let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.mainRed(), NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
@@ -357,6 +359,16 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
                 UIApplication.shared.applicationIconBadgeNumber = 0
             }
         }
+    }
+    
+    @objc func handleNearby() {
+        print("nearby")
+        
+        let nearbyController = NearbyController()
+        let nearbyControllerNavController = UINavigationController(rootViewController: nearbyController)
+        nearbyControllerNavController.modalPresentationStyle = .overFullScreen
+        nearbyControllerNavController.modalPresentationCapturesStatusBarAppearance = true
+        self.present(nearbyControllerNavController, animated: true, completion: nil)
     }
     
     var friendAnnotations : [Int:friendMGLAnnotation]?
