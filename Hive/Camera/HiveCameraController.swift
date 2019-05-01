@@ -598,29 +598,37 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         
     }
     
-    fileprivate func showPreviewPhotoController(previewImage: UIImage) {
+    fileprivate func showPreviewPhotoController(previewImage: UIImage, fromVideo:Bool=false) {
         
         let previewPhotoController = PreviewPhotoController()
         previewPhotoController.delegate = self
         
-        if currentCameraPosition == .front {
-            
-            let flippedPreviewImage = UIImage(cgImage: (previewImage.cgImage)!, scale: 1.0, orientation: UIImage.Orientation.leftMirrored)
-            
-            previewPhotoController.image = flippedPreviewImage
+        if currentCameraPosition == .front  {
+          
+            if fromVideo {
+                print("was video")
+                let flippedPreviewImage = UIImage(cgImage: (previewImage.cgImage)!, scale: 1.0, orientation: UIImage.Orientation.upMirrored)
+                previewPhotoController.image = flippedPreviewImage
+                previewPhotoController.wasVideo = true
+            } else {
+                let flippedPreviewImage = UIImage(cgImage: (previewImage.cgImage)!, scale: 1.0, orientation: UIImage.Orientation.leftMirrored)
+                previewPhotoController.image = flippedPreviewImage
+            }
             
         } else {
             previewPhotoController.image = previewImage
         }
-        print("PreviewPhotoController")
+        print("PreviewPhotoController image size" , previewPhotoController.image.size)
         let previewNavController = UINavigationController(rootViewController: previewPhotoController)
         present(previewNavController, animated: false) {
-            let r = self.previewLayer.videoPreviewLayer.metadataOutputRectConverted(fromLayerRect: self.centerView.frame)
-            let cgImage = previewImage.cgImage!
-            let width = CGFloat(cgImage.width)
-            let height = CGFloat(cgImage.height)
-            let cropRect = CGRect(x: r.origin.x * width, y: r.origin.y * height, width: r.size.width * width, height: r.size.height * height)
-            previewPhotoController.cropRect = cropRect
+            if !fromVideo {
+                let r = self.previewLayer.videoPreviewLayer.metadataOutputRectConverted(fromLayerRect: self.centerView.frame)
+                let cgImage = previewImage.cgImage!
+                let width = CGFloat(cgImage.width)
+                let height = CGFloat(cgImage.height)
+                let cropRect = CGRect(x: r.origin.x * width, y: r.origin.y * height, width: r.size.width * width, height: r.size.height * height)
+                previewPhotoController.cropRect = cropRect
+            }
         }
     }
     
@@ -694,7 +702,7 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             
             guard let photo = movieOutputURL.getThumnail() else {print("return 2"); return }
             
-            self.showPreviewPhotoController(previewImage: photo)
+            self.showPreviewPhotoController(previewImage: photo, fromVideo: true)
             
         } else {
             

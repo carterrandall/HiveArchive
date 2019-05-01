@@ -305,7 +305,6 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
         let nearbyButton = UIBarButtonItem(image: UIImage(named: "eye")?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(handleNearby))
         
         navigationItem.rightBarButtonItems = [searchButton, nearbyButton]
-        print(MapRender.mapView.locationManager.authorizationStatus.rawValue, "AFUCK MUSLIMS ")
         navigationController?.navigationBar.tintColor = .black
         
         let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.mainRed(), NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]

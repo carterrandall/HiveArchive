@@ -21,6 +21,7 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     var cropRect: CGRect?
     var backgroundTask: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier.invalid
     var captionView: CaptionView!
+    var wasVideo: Bool = false
     
     fileprivate var didAddCaption: Bool = false
     
@@ -152,10 +153,8 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     static let updateForNewPostNotificationName = NSNotification.Name("updateForNewPost")
     func sharePhoto(image: UIImage) {
         
-        
-        
         var croppedImage: UIImage?
-        if didAddCaption {
+        if didAddCaption || wasVideo {
             croppedImage = image.crop(rect: self.centerView.frame, withCaption: true)
         } else if isFromCameraRoll {
             croppedImage = image
@@ -255,7 +254,7 @@ extension PreviewPhotoController: CameraPreviewHUDDelegate {
         
         guard let image = previewImageView.image else { return }
         
-        if didAddCaption {
+        if didAddCaption || wasVideo {
             let editedImage = overlayImage(imageView: previewImageView)
             sharePhoto(image: editedImage)
         } else {
@@ -285,14 +284,14 @@ extension PreviewPhotoController: CameraPreviewHUDDelegate {
         
         var previewImage: UIImage!
         
-        if didAddCaption {
+        if didAddCaption || wasVideo {
             previewImage = overlayImage(imageView: previewImageView)
         } else {
             previewImage = previewImageView.image
         }
         
         var croppedImage: UIImage?
-        if didAddCaption {
+        if didAddCaption  {
             croppedImage = previewImage.crop(rect: self.centerView.frame, withCaption: true)
         } else if isFromCameraRoll {
             croppedImage = previewImage
