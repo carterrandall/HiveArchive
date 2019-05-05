@@ -17,11 +17,11 @@ let postCache = NSCache<AnyObject, AnyObject>() //id: Post
 class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     
     static var currentUser : User?
- //   static let serverurl = "https://hiveproduction.appspot.com"
+    static let serverurl = "https://hiveproduction.appspot.com"
     static let defualtProfileImageUrl = "https://storage.googleapis.com/hive_productionbucket/defaultimage3lowsize.png"
 //    static let serverurl = "http://192.168.1.53:8080" /// phoneix testing server.
     
-    static let serverurl = "https://hivebuild-c7559.appspot.com"
+//    static let serverurl = "https://hivebuild-c7559.appspot.com"
 //    static let serverurl = "http://192.168.2.26:8080"
     static var didLogout = false
     static let requestManager = RequestManager()
@@ -32,7 +32,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         if let notificationToken = UserDefaults.standard.getDeviceToken(), notificationToken != "nil" {
             params["token"] = notificationToken
         }
-        params["version"] = 1.02
+        params["version"] = 1.03
         Alamofire.request(url, method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: header).responseJSON { (data) in
             if let response = data.result.value as? [String:Any], let json = response["json"] as? [String:Any], let jwt = response["token"] as? String {
                 UserDefaults.standard.setJWTtoken(JWT: jwt)
