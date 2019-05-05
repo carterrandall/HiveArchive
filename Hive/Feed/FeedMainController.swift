@@ -16,10 +16,10 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
     
     fileprivate var feedImageIsPage: Bool = false
     
-    fileprivate let hiveControllerCellId = "hiveControllerCellId"
+    fileprivate let nearbyControllerCell = "nearbyControllerCellId"
     fileprivate let homeControllerCellId = "homeControllerCellId"
     
-    fileprivate var isInHive: Bool = false
+    //fileprivate var isInHive: Bool = false
     fileprivate var user: User?
     
     fileprivate var isFirstLoad: Bool = true
@@ -60,9 +60,9 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        MainTabBarController.requestManager.delegate = self
-        
         view.backgroundColor = .white
+        
+        MainTabBarController.requestManager.delegate = self
         
         fetchUserAndCheckHiveStatus()
         setupCollectionView()
@@ -74,25 +74,6 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
     func fetchUserAndCheckHiveStatus() {
         guard let user = MainTabBarController.currentUser else { return }
         self.user = user
-        print("CHECKING HIVE STATUS", user)
-        if let hid = user.HID, hid != 0 {
-            print("USER IS IN HIVE")
-            self.isInHive = true
-            self.menuBar.isHidden = false 
-            self.navigationItem.title = nil
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-                self.collectionView.performBatchUpdates(nil, completion: { (_) in
-                    self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .centeredHorizontally, animated: false)
-                    self.menuBar.collectionView.selectItem(at: IndexPath(item: 1, section: 0), animated: false, scrollPosition: .centeredHorizontally)
-                })
-            }
-        }
-        else {
-            self.isInHive = false
-            self.menuBar.isHidden = true
-            self.navigationItem.title = "Feed"
-        }
     }
     
     lazy var menuBar: FeedMenuBar = {
@@ -104,83 +85,34 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
     fileprivate func addObservers() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleReload), name: PreviewPhotoController.updateForNewPostNotificationName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleRefresh), name: ProfilePostsControllerCell.updateForDeletedPostNotificationName, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleInHiveFeed(_:)), name: MapRender.didEnterHiveNotificationName, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNoLongerInHiveFeed), name: MapRender.didExitHiveNotificationName, object: nil)
-    }
-    
-    @objc func handleNoLongerInHiveFeed() {
-        DispatchQueue.main.async {
-            self.isInHive = false
-            self.user?.HID = nil
-            self.navigationItem.title = "Feed"
-            self.menuBar.isHidden = true
-            self.menuBar.collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .centeredHorizontally)
-            if let hiveFeedCell = self.collectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? HiveFeedControllerCell {
-                hiveFeedCell.isFinishedPaging = false
-                hiveFeedCell.posts.removeAll()
-                hiveFeedCell.pids.removeAll()
-            }
-            self.collectionView.reloadData()
-        }
     }
 
     
-    @objc func handleInHiveFeed(_ notification: NSNotification) {
-        DispatchQueue.main.async {
-            if let hid = notification.userInfo?["HID"] as? Int {
-                self.user?.HID = hid
-                self.isInHive = true
-            }
-            
-            self.menuBar.isHidden = false
-            self.navigationItem.title = nil
-            
-            self.collectionView.reloadData()
-            self.collectionView.performBatchUpdates(nil, completion: { (_) in
-                DispatchQueue.main.async {
-                    self.menuBar.collectionView.selectItem(at: IndexPath(item: 1, section: 0), animated: false, scrollPosition: .centeredHorizontally)
-                    self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .centeredHorizontally, animated: false)
-                }
-            })
-        }
-    }
-    
     fileprivate func setupCollectionView() {
-        
         collectionView.backgroundColor = .white
-        collectionView.register(HiveFeedControllerCell.self, forCellWithReuseIdentifier: hiveControllerCellId)
+        collectionView.register(NearbyFeedControllerCell.self, forCellWithReuseIdentifier: nearbyControllerCell)
         collectionView.register(HomeFeedControllerCell.self, forCellWithReuseIdentifier: homeControllerCellId)
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
         collectionView.bounces = false
         collectionView.contentInsetAdjustmentBehavior = .never
-
     }
     
     var reloadHomeFeedOnScroll: Bool = false
-    var reloadHiveFeedOnScroll: Bool = false
-    
     @objc fileprivate func handleReload() {
         if let visibleCell = collectionView.visibleCells.first as? HomeFeedControllerCell {
             visibleCell.reloadFeed()
-            reloadHiveFeedOnScroll = true
-        
-        } else if let visibleCell = collectionView.visibleCells.first as? HiveFeedControllerCell {
-            visibleCell.reloadFeed()
+        } else {
             reloadHomeFeedOnScroll = true
         }
-        
     }
     
     var refreshHomeFeedOnScroll: Bool = false
-    var refreshHiveFeedOnScroll: Bool = false
+   
     @objc fileprivate func handleRefresh() {
         if let visibleCell = collectionView.visibleCells.first as? HomeFeedControllerCell {
             visibleCell.refresh()
-            refreshHiveFeedOnScroll = true
-            
-        } else if let visibleCell = collectionView.visibleCells.first as? HiveFeedControllerCell {
-            visibleCell.refresh()
+        } else {
             refreshHomeFeedOnScroll = true
         }
     }
@@ -195,17 +127,8 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
                 cell.refresh()
                 refreshHomeFeedOnScroll = false
             }
-        } else if let cell = cell as? HiveFeedControllerCell, indexPath.item == 1 {
-            if reloadHiveFeedOnScroll {
-                cell.reloadFeed()
-                reloadHiveFeedOnScroll = false
-            } else if refreshHiveFeedOnScroll {
-                cell.refresh()
-                refreshHiveFeedOnScroll = false
-            }
-
         } else {
-            print("COULDINT GET CELL")
+            print("COULDINT GET CELL or not 1")
         }
     }
 
@@ -300,11 +223,7 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
             cell.delegate = self
             return cell
         } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: hiveControllerCellId, for: indexPath) as! HiveFeedControllerCell
-            
-            if let hid = self.user?.HID {
-                cell.HID = hid
-            }
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: nearbyControllerCell, for: indexPath) as! NearbyFeedControllerCell
             
             cell.delegate = self
             return cell
@@ -312,7 +231,7 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return isInHive ? 2 : 1
+        return 2
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -330,7 +249,7 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
             if let cell = cell as? HomeFeedControllerCell {
                 
                 cell.endPlayingVideos()
-            } else if let cell = cell as? HiveFeedControllerCell {
+            } else if let cell = cell as? NearbyFeedControllerCell {
                 cell.endPlayingVideos()
             }
         }
@@ -338,7 +257,7 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
  
 }
 
-extension FeedMainController: HomeFeedControllerCellDelegate, HiveFeedControllerCellDelegate {
+extension FeedMainController: HomeFeedControllerCellDelegate, NearbyFeedControllerCellDelegate {
     
     func didTapShare(post: Post) {
         endVideosInChildCells()
@@ -363,7 +282,6 @@ extension FeedMainController: HomeFeedControllerCellDelegate, HiveFeedController
         profileController.partialUser = user
         let profileNavController = UINavigationController(rootViewController: profileController)
         self.tabBarController?.present(profileNavController, animated: true, completion: nil)
-
     }
     
     func didSelectStory(postViewer: FeedHeaderPostViewer) {

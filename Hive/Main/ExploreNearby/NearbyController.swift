@@ -23,14 +23,19 @@ class NearbyController: UIViewController,UICollectionViewDelegate, UICollectionV
         return cv
     }()
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    
         view.backgroundColor = .clear
         collectionView.backgroundColor = .clear
         
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         blurView.frame = view.bounds
+        
         view.insertSubview(blurView, at: 0)
         
         collectionView.register(PostCell.self, forCellWithReuseIdentifier: postCellId)
@@ -47,21 +52,17 @@ class NearbyController: UIViewController,UICollectionViewDelegate, UICollectionV
         self.setupNavBar()
         
     }
-    
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
+
     fileprivate func setupNavBar() {
         navigationController?.makeTransparent()
-        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
+        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
         navigationController?.navigationBar.titleTextAttributes = textAttributes
-        navigationItem.title = "Explore Nearby"
+        navigationItem.title = "Hive Name Here"
         
         let dismissButton = UIBarButtonItem(image: UIImage(named: "cancel"), style: .plain, target: self, action: #selector(handleDismiss))
         navigationItem.leftBarButtonItem = dismissButton
         
-        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.tintColor = .black
         
     }
     
@@ -114,7 +115,6 @@ class NearbyController: UIViewController,UICollectionViewDelegate, UICollectionV
         } else if self.posts.count == 0 {
             self.showAccessoryDisplay(posts: true)
         }
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -124,7 +124,7 @@ class NearbyController: UIViewController,UICollectionViewDelegate, UICollectionV
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: postCellId, for: indexPath) as! PostCell
         cell.post = posts[indexPath.item]
-        cell.whiteTint = true
+      //  cell.whiteTint = true
         cell.delegate = self
         return cell
     }
@@ -225,6 +225,7 @@ extension NearbyController: PostCellDelegate {
         commentsLikesController.post = cell.post
         commentsLikesController.delegate = self
         let commentsLikesNavController = UINavigationController(rootViewController: commentsLikesController)
+        commentsLikesNavController.modalPresentationStyle = .overFullScreen
         self.present(commentsLikesNavController, animated: true, completion: nil)
     }
     
@@ -233,6 +234,7 @@ extension NearbyController: PostCellDelegate {
         let sharePostController = SharePostController()
         sharePostController.post = post
         let sharePostNavController = UINavigationController(rootViewController: sharePostController)
+        sharePostNavController.modalPresentationStyle = .overFullScreen
         self.present(sharePostNavController, animated: true, completion: nil)
     }
     

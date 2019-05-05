@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol HiveFeedControllerCellDelegate: class {
+protocol NearbyFeedControllerCellDelegate: class {
     func updateMessageIcon(messageCount: Int)
     func didTapShare(post: Post)
     func didTapComments(commentsLikesController: CommentsLikesController)
@@ -17,24 +17,15 @@ protocol HiveFeedControllerCellDelegate: class {
     func openCamera()
 }
 
-class HiveFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class NearbyFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    weak var delegate: HiveFeedControllerCellDelegate?
+    weak var delegate: NearbyFeedControllerCellDelegate?
     
     fileprivate let postCellId = "postCellId"
     fileprivate let headerId = "headerId"
     fileprivate let gridCellId = "gridCellId"
     
     fileprivate var isNewPostsUp: Bool = false
-
-    
-    var HID: Int? {
-        didSet {
-            print("SETTING HERE")
-            if self.posts.count > 0 { return }
-            loadFeed()
-        }
-    }
 
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -52,6 +43,10 @@ class HiveFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UI
         return cv
     }()
     
+    @objc fileprivate func reloadFeed() {
+        
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -62,6 +57,8 @@ class HiveFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UI
         collectionView.register(HiveHeaderCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
         collectionView.register(PostCell.self, forCellWithReuseIdentifier: postCellId)
         collectionView.register(FeedPostGridCell.self, forCellWithReuseIdentifier: gridCellId)
+        
+        fetchNearbyPosts()
 
     }
     
@@ -69,214 +66,59 @@ class HiveFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UI
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    var headerJson = [String: Any]() {
-        didSet {
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
+    fileprivate func fetchNearbyPosts() {
+        print("fetching posts")
+        guard let coord = MapRender.mapView.userLocation?.coordinate else { return}
+        let params = ["latitude":coord.latitude,"longitude":coord.longitude] as [String: Any]
+        MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/loadNearbyFeed", params: params) { (json, sc) in
+            if let sc = sc, sc != 200 {
+                print("Failed to fetch nearby posts", sc)
             }
-        }
-    }
-    fileprivate func loadFeed() {
-        print("loading hive feed", posts.count)
-        if let hid = self.HID {
-            let params = ["HID": hid] as [String: Any]
-            MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/loadFeed", params: params) { (json, _) in
-                guard let json = json as? [String: Any] else { return }
-                if let messages = json["Messages"] as? Int {
-                    self.delegate?.updateMessageIcon(messageCount: messages)
-                }
-                
-                if let headerJson = json["Header"] as? [[String: Any]], let count = json["HeaderCount"] as? Int {
-                    self.headerJson = ["json": headerJson, "count": count]
-                    
-                } else {
-                    print("NO HEADER JSON")
-                }
-                
-                if let postJson = json["Posts"] as? [[String: Any]], let postCount = json["FeedCount"] as? Int {
-                    DispatchQueue.main.async {
-                        print("processPosts load feed")
-                        self.processPosts(json: postJson, new: false)
-                    }
-                    self.isFinishedPaging = (postCount < 10 ? true : false)
-                }
-            }
-        }
-        
-    }
-    
-    fileprivate func paginateFeed() {
-        guard let oldestDate = self.posts.last?.creationDate.timeIntervalSince1970, let newestDate = self.posts.first?.creationDate.timeIntervalSince1970, let hid = self.HID else { return }
-        let params = ["lastPost": oldestDate, "newestPost": newestDate, "HID": hid] as [String: Any]
-        MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/paginateFeed", params: params) { (json, _) in
-            guard let json = json as? [String: Any] else { return }
-            if let messages = json["Messages"] as? Int {
-                self.delegate?.updateMessageIcon(messageCount: messages)
-            }
+            guard let json = json as? [[String: Any]] else {print("bad form"); return }
             
-            if let postJson = json["Posts"] as? [[String: Any]], let postCount = json["FeedCount"] as? Int {
-                self.isFinishedPaging = (postCount < 10 ? true : false)
-                
-                if let newPostJson = json["NewPosts"] as? [[String: Any]] {
-                    print("processPosts 2")
-                    self.processPosts(json: postJson, new: false, completion: {
-                        DispatchQueue.main.async {
-                            print("processPosts 3")
-                            self.processPosts(json: newPostJson, new: true)
-                            print(self.pids, "pids")
-                        }
-                    })
-                } else {
-                    print("processPosts 4")
-                    self.processPosts(json: postJson, new: false)
-                }
-            }
+            self.processPostJson(json: json)
         }
     }
-
-    var isFinishedPaging: Bool = false
+    
     var posts = [Post]()
     var pids = [Int]()
-    var tempNewPosts = [Post]()
-    fileprivate func processPosts(json: [[String: Any]], new: Bool, completion: @escaping() -> () = {}) {
-        print("PROCESSING POSTS HIVE FEED")
-    
+    fileprivate func processPostJson(json: [[String: Any]]) {
+        print("processing Posts", json.count)
         if json.count > 0 {
-            if noPostsStackView != nil {
-                self.noPostsStackView.removeFromSuperview()
-                self.noPostsStackView = nil
+            if noPostsLabel != nil {
+                self.noPostsLabel.removeFromSuperview()
+                self.noPostsLabel = nil
+                self.inviteButton.removeFromSuperview()
+                self.inviteButton = nil
+                print("REMOVED IT")
+            } else {
+                print("NIL")
             }
-            json.forEach({ (snapshot) in
+            json.forEach { (snapshot) in
                 var post = Post(dictionary: snapshot)
                 
-                if !pids.contains(post.id) { //safe guard against duplication
+                if !pids.contains(post.id) {
                     pids.append(post.id)
-                } else {print("RETURNING", post.id, pids);return }
-                
+                } else {
+                    return
+                }
                 post.user = User(postdictionary: snapshot)
                 post.setPostCache()
-                if new {
-                    self.tempNewPosts.insert(post, at: 0)
-                } else {
-                    self.posts.append(post)
-                }
-            })
-            
-            if new && self.posts.count > 0 { //maintain scroll position
-                self.reloadForNewItems(posts: self.tempNewPosts)
-            } else {
-                if self.posts.count == 0 {
-                    self.posts = self.tempNewPosts
-                    self.tempNewPosts.removeAll()
-                }
+                
+                self.posts.append(post)
                 self.collectionView.reloadData()
-                self.collectionView.performBatchUpdates(nil) { (_) in
-                    completion()
-                }
             }
-            
         } else if self.posts.count == 0 {
-            self.showNoPostsDisplay()
+            self.showAccessoryDisplay(posts: true)
         }
-    }
-    
-    fileprivate func reloadForNewItems(posts: [Post]) {
-        self.tempNewPosts.removeAll()
-        let contentHeight = self.collectionView.contentSize.height
-        let offsetY = self.collectionView.contentOffset.y
-        
-        if offsetY < self.collectionView.frame.height {
-            posts.forEach { (post) in
-                self.posts.insert(post, at: 0)
-            }
-            self.collectionView.reloadData()
-            return
-        }
-        
-        let bottomOffset = contentHeight - offsetY
-        
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        
-        self.collectionView.performBatchUpdates({
-            var indexPaths = [IndexPath]()
-            for i in 0..<posts.count {
-                let index = 0 + i
-                indexPaths.append(IndexPath(item: index, section: 0))
-            }
-            if indexPaths.count > 0 {
-                self.collectionView.insertItems(at: indexPaths)
-            }
-        }) { (complete) in
-            DispatchQueue.main.async {
-                self.collectionView.contentOffset = CGPoint(x: 0, y: self.collectionView.contentSize.height - bottomOffset)
-                CATransaction.commit()
-                self.insertNewPostsButton(count: posts.count)
-            }
-            
-        }
-    }
-    
-    @objc func reloadFeed() {
-        print("RELOADING HIVE FEED")
-        guard let hid = self.HID else { return }
-        let newestPost = self.posts.first?.creationDate.timeIntervalSince1970 ?? 0
-        print("newesetPOST", newestPost)
-        let params = ["newestPost": newestPost, "HID": hid] as [String: Any]
-        self.collectionView.refreshControl?.beginRefreshing()
-        MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/reloadFeed", params: params) { (json, _) in
-            self.collectionView.refreshControl?.endRefreshing()
-            
-            guard let json = json as? [String: Any] else { return }
-            if let messages = json["Messages"] as? Int {
-                self.delegate?.updateMessageIcon(messageCount: messages)
-            }
-            if let postJson = json["NewPosts"] as? [[String: Any]] {
-                if postJson.count == 10 {
-                    self.posts.removeAll()
-                    self.pids.removeAll()
-                    self.isFinishedPaging = false
-                    self.processPosts(json: postJson, new: false)
-                } else {
-                    DispatchQueue.main.async {
-                        self.processPosts(json: postJson, new: true)
-                        print("processing posts reload feed", self.posts.count)
-                    }
-                }
-            }
-            
-            if let headerJson = json["Header"] as? [[String: Any]], let count = json["HeaderCount"] as? Int {
-                print(count, "HOME FEED ZZZZZZZZZ")
-                DispatchQueue.main.async {
-                    if let hiveHeader = self.collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) as? HiveHeaderCell {
-                        
-                        hiveHeader.processHeaderJson(headerJson: ["json":headerJson,"count":count])
-                        
-                    }
-                }
-            }
-            
-        }
-        
     }
 
-    
-    @objc func refresh() {
-        self.posts.removeAll()
-        self.pids.removeAll()
-        self.isFinishedPaging = false
-        self.loadFeed()
-    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return posts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.item == self.posts.count - 1 && !isFinishedPaging {
-            paginateFeed()
-        }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: postCellId, for: indexPath) as! PostCell
         if posts.count > 0 {
@@ -299,27 +141,6 @@ class HiveFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UI
         return 1
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let cellWidth = ((frame.width) / (UIScreen.main.bounds.width <  375 ? 5 : 6))
-        return CGSize(width: frame.width, height: cellWidth + 8)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerId, for: indexPath) as! HiveHeaderCell
-        if let hid = self.HID, header.HID == nil {
-            header.HID = hid
-        }
-        
-        if header.headerJson == nil && self.headerJson.count > 0 {
-            header.headerJson = self.headerJson
-        }
-        
-        header.delegate = self
-        return header
-        
-    }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 20, left: 0, bottom: 30, right: 0)
     }
@@ -335,10 +156,6 @@ class HiveFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UI
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         DispatchQueue.main.async {
             self.checkToPlayVideo()
-        }
-
-        if self.isNewPostsUp && scrollView.contentOffset.y < self.frame.height {
-            self.handleCloseNewPosts()
         }
     }
     
@@ -386,94 +203,64 @@ class HiveFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, UI
         self.collectionView.contentOffset = self.collectionView.contentOffset
     }
     
-    var noPostsStackView: UIStackView!
-    fileprivate func showNoPostsDisplay() {
+    var noPostsLabel: UILabel!
+    var inviteButton: UIButton!
+    fileprivate func showAccessoryDisplay(posts: Bool=false) {
+        guard noPostsLabel == nil else {print("ah the shit was already added"); return }
         print("SHOWING NO POSTS")
-        guard noPostsStackView == nil else {return}
-        let noPostsLabel = UILabel()
-        noPostsLabel.text = "No posts here yet!"
-        noPostsLabel.font = UIFont.boldSystemFont(ofSize: 26)
+        noPostsLabel = UILabel()
+        
+        noPostsLabel.text = posts ? "No posts nearby." : "Enable location services to explore the world around you."
+        noPostsLabel.font = UIFont.boldSystemFont(ofSize: 18)
         noPostsLabel.textAlignment = .center
-        noPostsLabel.textColor = .darkGray
+        noPostsLabel.textColor = .lightGray
+        noPostsLabel.numberOfLines = 0
+        
+        inviteButton = UIButton(type: .system)
+        inviteButton.backgroundColor = .white
+        inviteButton.setTitle((posts ? "Invite Friends" : "Enable Location Services"), for: .normal)
+        inviteButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+        
+        inviteButton.setTitleColor((posts ? UIColor.rgb(red: 252, green: 194, blue: 0): .mainRed()), for: .normal)
+        inviteButton.layer.cornerRadius = 15
+        inviteButton.layer.borderWidth = 2
+        inviteButton.layer.borderColor = posts ? UIColor.rgb(red: 252, green: 194, blue: 0).cgColor: UIColor.mainRed().cgColor
+        posts ? inviteButton.addTarget(self, action: #selector(handleInvite), for: .touchUpInside) : inviteButton.addTarget(self, action: #selector(handleSettings), for: .touchUpInside)
         
         
-        let detailLabel = UILabel()
-        detailLabel.text = "Share something to get the ball rolling."
-        detailLabel.textAlignment = .center
-        detailLabel.numberOfLines = 0
-        detailLabel.font = UIFont.systemFont(ofSize: 18)
-        detailLabel.textColor = .lightGray
+        addSubview(noPostsLabel)
+        noPostsLabel.anchor(top: nil, left: leftAnchor, bottom: centerYAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 20, width: 0, height: 0)
         
-        noPostsStackView = UIStackView(arrangedSubviews: [noPostsLabel, detailLabel])
-        noPostsStackView.axis = .vertical
-        noPostsStackView.spacing = 16
-        
-        addSubview(noPostsStackView)
-        noPostsStackView.anchor(top: nil, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 20, paddingBottom: 0, paddingRight: 20, width: 0, height: 0)
-        noPostsStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        
+        addSubview(inviteButton)
+        inviteButton.anchor(top: noPostsLabel.bottomAnchor, left: nil, bottom: nil, right: nil, paddingTop: 16, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: posts ? 120: 200, height: 30)
+        inviteButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         
     }
     
+    @objc fileprivate func handleInvite() {
+        if let username = MainTabBarController.currentUser?.username{
+            let sms: String = "sms:&body=Add me on Hive, my username is \(username)! http://hiveios.com/HiveforiOS"
+            let strURL: String = sms.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            UIApplication.shared.open(URL.init(string: strURL)!, options: [:], completionHandler: nil)
+        }else{
+            let sms: String = "sms:&body=Come join me on Hive! http://hiveios.com/HiveforiOS"
+            let strURL: String = sms.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            UIApplication.shared.open(URL.init(string: strURL)!, options: [:], completionHandler: nil)
+        }
+    }
     
-    var newPostsButton: UIButton!
-    fileprivate func insertNewPostsButton(count: Int) {
-        if isNewPostsUp {
-            if let currentLabel = newPostsButton.titleLabel?.text?.trimmingCharacters(in: CharacterSet(charactersIn: "01234567890").inverted), let currentCount = Int(currentLabel) {
-                print("currentlabel", currentLabel)
-                let newCount = currentCount + count
-                newPostsButton.setTitle("\(newCount) New Post\(newCount == 1 ? "" : "s")", for: .normal)
-            } else {
-                print("COUNLDINT GET CURRENT LABEL")
-                newPostsButton.setTitle("\(count) New Post\(count == 1 ? "" : "s")", for: .normal)
+    @objc fileprivate func handleSettings() {
+        if let settingsUrl = URL(string: UIApplication.openSettingsURLString)  ,UIApplication.shared.canOpenURL(settingsUrl) {
+            UIApplication.shared.open(settingsUrl, options: [:]) { (success) in
+                print("settings opened")
+                
             }
-        } else {
-            isNewPostsUp = true
-            newPostsButton = UIButton(type: .system)
-            newPostsButton.backgroundColor = .mainRed()
-            newPostsButton.setTitle("\(count) New Post \(count == 1 ? "" : "s")", for: .normal)
-            newPostsButton.setTitleColor(.white, for: .normal)
-            newPostsButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-            newPostsButton.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
-            newPostsButton.layer.cornerRadius = 15
-            newPostsButton.addTarget(self, action: #selector(handleScrollToTop), for: .touchUpInside)
-            
-            let closeNewPostsButton = UIButton(type: .system)
-            closeNewPostsButton.setImage(UIImage(named: "fatX"), for: .normal)
-            closeNewPostsButton.tintColor = .white
-            closeNewPostsButton.addTarget(self, action: #selector(handleCloseNewPosts), for: .touchUpInside)
-            
-            addSubview(newPostsButton)
-            newPostsButton.anchor(top: safeAreaLayoutGuide.topAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 16, paddingLeft: 80, paddingBottom: 0, paddingRight: 80, width: 0, height: 30)
-            
-            newPostsButton.addSubview(closeNewPostsButton)
-            closeNewPostsButton.anchor(top: newPostsButton.topAnchor, left: nil, bottom: newPostsButton.bottomAnchor, right: newPostsButton.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 8, width: 30, height: 30)
-            
-        }
-        
-    }
-
-    @objc fileprivate func handleScrollToTop() {
-        self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
-        UIView.animate(withDuration: 0.3, animations: {
-            self.newPostsButton.alpha = 0.0
-        }) { (complete) in
-            self.newPostsButton.removeFromSuperview()
-        }
-    }
-    
-    @objc fileprivate func handleCloseNewPosts() {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.newPostsButton.alpha = 0.0
-        }) { (_) in
-            self.newPostsButton.removeFromSuperview()
-            self.isNewPostsUp = false
         }
     }
     
 }
 
-extension HiveFeedControllerCell: PostCellDelegate {
+extension NearbyFeedControllerCell: PostCellDelegate {
     
     func didTapLike(cell: PostCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
@@ -521,7 +308,7 @@ extension HiveFeedControllerCell: PostCellDelegate {
     }
 }
 
-extension HiveFeedControllerCell: CommentsLikesControllerDelegate {
+extension NearbyFeedControllerCell: CommentsLikesControllerDelegate {
  
     
     func didCommentOrDelete(index: Int, increment: Int) {
@@ -539,43 +326,3 @@ extension HiveFeedControllerCell: CommentsLikesControllerDelegate {
     
 }
 
-extension HiveFeedControllerCell: HiveHeaderCellDelegate {
-    
-    func openCamera() {
-        delegate?.openCamera()
-    }
-    
-    func showPostViewer(postViewer: FeedHeaderPostViewer) {
-        delegate?.didSelectStory(postViewer: postViewer)
-    }
-    
-    func updateMessages(messageCount: Int) {
-        delegate?.updateMessageIcon(messageCount: messageCount)
-    }
-    
-}
-
-extension HiveFeedControllerCell: FeedPostViewerControllerDelegate {
-    
-    func didPageForMorePosts(posts: [Post?], isFinishedPaging: Bool) {
-        self.isFinishedPaging = isFinishedPaging
-        self.posts = posts as! [Post]
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
-    }
-    
-    func didLikePost(index: Int, post: Post) {
-        self.posts[index] = post
-        DispatchQueue.main.async {
-            self.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
-        }
-    }
-    
-    func viewerWillDismiss(indexPath: IndexPath) {
-        DispatchQueue.main.async {
-            self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
-        }
-    }
-    
-}

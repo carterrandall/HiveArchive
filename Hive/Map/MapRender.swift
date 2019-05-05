@@ -367,7 +367,6 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
         let nearbyController = NearbyController()
         let nearbyControllerNavController = UINavigationController(rootViewController: nearbyController)
         nearbyControllerNavController.modalPresentationStyle = .overFullScreen
-        nearbyControllerNavController.modalPresentationCapturesStatusBarAppearance = true
         self.present(nearbyControllerNavController, animated: true, completion: nil)
     }
     

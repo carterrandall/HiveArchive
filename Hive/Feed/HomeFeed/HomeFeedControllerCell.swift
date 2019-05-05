@@ -260,8 +260,6 @@ class HomeFeedControllerCell: UICollectionViewCell, UICollectionViewDataSource, 
         }
     }
 
-
-    
     @objc func refresh() { //complete wipe, used when user deletes a post or recconects to internet
         DispatchQueue.main.async {
             self.posts.removeAll()
@@ -269,7 +267,6 @@ class HomeFeedControllerCell: UICollectionViewCell, UICollectionViewDataSource, 
             self.isFinishedPaging = false
             self.loadFeed()
         }
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

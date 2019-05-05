@@ -218,7 +218,6 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             button.setImage(UIImage(named: "cancel"), for: .normal)
             button.tintColor = .white
             button.addTarget(self, action: #selector(handleDismiss), for: .touchUpInside)
-           //x button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
             return button
         }()
         

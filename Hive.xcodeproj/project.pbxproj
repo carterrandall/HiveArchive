@@ -82,6 +82,7 @@
 		B194E4A421D5ADDE005E66B6 /* SignUpControllerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B194E4A321D5ADDE005E66B6 /* SignUpControllerCell.swift */; };
 		B194E4A821D5C096005E66B6 /* LoginSignUpMenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B194E4A721D5C096005E66B6 /* LoginSignUpMenuBar.swift */; };
 		B194E4AA21D5C44A005E66B6 /* LoginSignUpMenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B194E4A921D5C44A005E66B6 /* LoginSignUpMenuCell.swift */; };
+		B19F630F227F922600E15272 /* HivePostViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19F630E227F922600E15272 /* HivePostViewerController.swift */; };
 		B19F6A4722079685009CFEAD /* CreateHiveMenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19F6A4622079685009CFEAD /* CreateHiveMenuBar.swift */; };
 		B19F6A4922079B08009CFEAD /* CreateHiveMenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19F6A4822079B08009CFEAD /* CreateHiveMenuCell.swift */; };
 		B19F6A4B2207CF59009CFEAD /* ButtonWithCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19F6A4A2207CF59009CFEAD /* ButtonWithCount.swift */; };
@@ -226,6 +227,7 @@
 		B194E4A321D5ADDE005E66B6 /* SignUpControllerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpControllerCell.swift; sourceTree = "<group>"; };
 		B194E4A721D5C096005E66B6 /* LoginSignUpMenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSignUpMenuBar.swift; sourceTree = "<group>"; };
 		B194E4A921D5C44A005E66B6 /* LoginSignUpMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSignUpMenuCell.swift; sourceTree = "<group>"; };
+		B19F630E227F922600E15272 /* HivePostViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HivePostViewerController.swift; sourceTree = "<group>"; };
 		B19F6A4622079685009CFEAD /* CreateHiveMenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateHiveMenuBar.swift; sourceTree = "<group>"; };
 		B19F6A4822079B08009CFEAD /* CreateHiveMenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateHiveMenuCell.swift; sourceTree = "<group>"; };
 		B19F6A4A2207CF59009CFEAD /* ButtonWithCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithCount.swift; sourceTree = "<group>"; };
@@ -564,6 +566,14 @@
 			path = SignUp;
 			sourceTree = "<group>";
 		};
+		B19F6310227F923100E15272 /* HivePostViewer */ = {
+			isa = PBXGroup;
+			children = (
+				B19F630E227F922600E15272 /* HivePostViewerController.swift */,
+			);
+			path = HivePostViewer;
+			sourceTree = "<group>";
+		};
 		B1AB858D21D9B2D0000F8A21 /* ChatCells */ = {
 			isa = PBXGroup;
 			children = (
@@ -723,6 +733,7 @@
 				B123263F21FCF7A500A51B88 /* MapRender.swift */,
 				B1621193220684AB00382C98 /* MapRenderExtensions.swift */,
 				B16211972206908D00382C98 /* DraggableAnnotationView.swift */,
+				B19F6310227F923100E15272 /* HivePostViewer */,
 				B123264A2203757200A51B88 /* HivePreview */,
 				B123264321FD220700A51B88 /* MembersView */,
 				B123263621FCF71800A51B88 /* Annotations */,
@@ -1034,6 +1045,7 @@
 				B1FA2B2921A1D73600B4EAE2 /* PreviewPhotoController.swift in Sources */,
 				B14E475421AF63CF00505355 /* BlockedCell.swift in Sources */,
 				B1FA2B2421A1D73600B4EAE2 /* PostCell.swift in Sources */,
+				B19F630F227F922600E15272 /* HivePostViewerController.swift in Sources */,
 				B19F6A4722079685009CFEAD /* CreateHiveMenuBar.swift in Sources */,
 				B11DA0112210EF00007F85D0 /* Reachability.swift in Sources */,
 				B1FA2B2621A1D73600B4EAE2 /* VideoPlaybackController.swift in Sources */,
