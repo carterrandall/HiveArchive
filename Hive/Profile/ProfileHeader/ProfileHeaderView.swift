@@ -175,9 +175,9 @@ class ProfileHeaderView: UIView {
         addSubview(blurView)
         blurView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: frame.width, height: frame.height)
         
-        
+        let statusBarHeight = UIApplication.shared.statusBarFrame.height
         addSubview(profileImageContainerView)
-        profileImageContainerView.anchor(top: topAnchor, left: nil, bottom: nil, right: nil, paddingTop: 24 + UIApplication.shared.statusBarFrame.height, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: profileDim, height: profileDim)
+        profileImageContainerView.anchor(top: topAnchor, left: nil, bottom: nil, right: nil, paddingTop: 24 + (statusBarHeight == 0 ? self.fakeStatusBarHeight() : statusBarHeight), paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: profileDim, height: profileDim)
         
         profileImageContainerView.layer.cornerRadius = profileDim / 2
         profileImageContainerView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
@@ -212,8 +212,12 @@ class ProfileHeaderView: UIView {
         userActionButton.anchor(top: nil, left: nameLabel.rightAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: -6, paddingBottom: 0, paddingRight: 0, width: 30, height: 30)
         userActionButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor).isActive = true
         
-        
     }
+    
+    fileprivate func fakeStatusBarHeight() -> CGFloat {
+        if (UIScreen.main.bounds.height / UIScreen.main.bounds.width) > 16/9 { return 44 } else { return 20 }
+    }
+    
 
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

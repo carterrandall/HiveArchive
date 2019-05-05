@@ -72,7 +72,6 @@ class SearchControllerCell: UICollectionViewCell, UICollectionViewDataSource, UI
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
-        
         if (searchBar.text?.count)! >= searchTextThreshold {
             
             shouldDisplaySearchedUsers = true
@@ -145,7 +144,7 @@ class SearchControllerCell: UICollectionViewCell, UICollectionViewDataSource, UI
     var isFinishedPagingUsers: Bool = false
     var searchUids = [Int]()
     func paginateUsers() {
-        print("paginating")
+        print("paginating HERE!")
         if let queryText = searchBar.text?.lowercased() {
             self.queryText = queryText
             
@@ -201,7 +200,7 @@ class SearchControllerCell: UICollectionViewCell, UICollectionViewDataSource, UI
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .white
+        cv.backgroundColor = .clear
         cv.keyboardDismissMode = .onDrag
         cv.alwaysBounceVertical = true
         cv.showsVerticalScrollIndicator = false
@@ -213,7 +212,7 @@ class SearchControllerCell: UICollectionViewCell, UICollectionViewDataSource, UI
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = .white
+        backgroundColor = .clear
         
         
         setupViews()
@@ -238,9 +237,10 @@ class SearchControllerCell: UICollectionViewCell, UICollectionViewDataSource, UI
     fileprivate func setupViews() {
         
         addSubview(collectionView)
-        backgroundColor = .white
+        backgroundColor = .clear
         let searchBarContainerView = UIView()
-        searchBarContainerView.backgroundColor = UIColor.rgb(red: 240, green: 240, blue: 240)
+        searchBarContainerView.backgroundColor = UIColor.rgb(red: 245, green: 245, blue: 245)
+        searchBarContainerView.setShadow(offset: .zero, opacity: 0.1, radius: 3, color: UIColor.black)
         searchBarContainerView.layer.cornerRadius = 15
         addSubview(searchBarContainerView)
         searchBarContainerView.anchor(top: safeAreaLayoutGuide.topAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 16.0, paddingLeft: 40, paddingBottom: 0, paddingRight: 40, width: 0, height: 30)

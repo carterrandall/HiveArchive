@@ -40,7 +40,7 @@ class CommentsLikesMenuBar: UIView, UICollectionViewDataSource, UICollectionView
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .white
+        cv.backgroundColor = .clear
         cv.delegate = self
         cv.dataSource = self
         cv.showsHorizontalScrollIndicator = false
@@ -57,7 +57,7 @@ class CommentsLikesMenuBar: UIView, UICollectionViewDataSource, UICollectionView
         addSubview(collectionView)
         collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
         
-        backgroundColor = .white
+        backgroundColor = .clear
         
         collectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: .centeredHorizontally)
         

@@ -116,7 +116,7 @@ class ChatLogCell: UITableViewCell {
     
     let sentDateLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = .gray
         label.textAlignment = .right
         return label
@@ -139,7 +139,7 @@ class ChatLogCell: UITableViewCell {
         profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         let whiteView = UIView()
-        whiteView.backgroundColor = .white
+        whiteView.backgroundColor = .clear
         whiteView.layer.cornerRadius = 31
         insertSubview(whiteView, belowSubview: profileImageView)
         whiteView.anchor(top: nil, left: profileImageView.leftAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 62, height: 62)
@@ -169,12 +169,12 @@ class ChatLogCell: UITableViewCell {
         
         addSubview(messageLabel)
         messageLabel.anchor(top: usernameLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 8, paddingLeft: 0, paddingBottom: 0, paddingRight: 8, width: 0, height: 0)
-        
-        let seperatorView = UIView()
-        seperatorView.backgroundColor = UIColor(white: 0, alpha: 0.1)
-        addSubview(seperatorView)
-        seperatorView.anchor(top: nil, left: profileImageView.rightAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 8, width: 0, height: 0.5)
-        
+//
+//        let seperatorView = UIView()
+//        seperatorView.backgroundColor = UIColor(white: 0, alpha: 0.1)
+//        addSubview(seperatorView)
+//        seperatorView.anchor(top: nil, left: profileImageView.rightAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 8, width: 0, height: 0.5)
+//
     }
     
     required init?(coder aDecoder: NSCoder) {

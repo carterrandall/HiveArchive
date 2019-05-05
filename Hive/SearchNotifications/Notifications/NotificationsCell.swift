@@ -71,7 +71,7 @@ class NotificationsCell: UITableViewCell {
                 break
             }
             
-            attributedString.append(NSAttributedString(string: "\n" + notification.creationDate.timeAgoDisplay(), attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]))
+            attributedString.append(NSAttributedString(string: "\n" + notification.creationDate.timeAgoDisplay(), attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: UIColor.lightGray]))
             
             notificationLabel.attributedText = attributedString
             
@@ -170,7 +170,7 @@ class NotificationsCell: UITableViewCell {
         textLabelToPostLeftAnchor = notificationLabel.rightAnchor.constraint(equalTo: postView.leftAnchor, constant: -8)
         textLabelToPostLeftAnchor.isActive = true
         
-        backgroundColor = .white
+        backgroundColor = .clear
     }
     
     @objc fileprivate func handleProfile() {

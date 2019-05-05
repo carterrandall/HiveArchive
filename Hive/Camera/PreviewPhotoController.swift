@@ -41,6 +41,10 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
     let previewHUD = CameraPreviewHUD()
     
     override var prefersStatusBarHidden: Bool { return true }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,11 +79,11 @@ class PreviewPhotoController: UIViewController, UITextFieldDelegate {
             previewImageView.frame = view.bounds
         }
         
-        bottomAlphaView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        bottomAlphaView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         view.addSubview(bottomAlphaView)
         bottomAlphaView.anchor(top: centerView.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: -10, paddingRight: 0, width: 0, height: 0)
 
-        let topAlphaView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        let topAlphaView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         view.addSubview(topAlphaView)
         topAlphaView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
         

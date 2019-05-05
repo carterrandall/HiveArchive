@@ -235,7 +235,7 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     fileprivate func setNavBarAppearance() {
-        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.mainRed(), NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
+        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.mainRed(), NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20)]
         navigationController?.navigationBar.titleTextAttributes = textAttributes
         navigationController?.makeTransparent()
 
@@ -270,7 +270,7 @@ class FeedMainController: UICollectionViewController, UICollectionViewDelegateFl
         let chatController = ChatLogController()
         chatController.delegate = self
         let chatNavController = UINavigationController(rootViewController: chatController)
-       // chatNavController.modalPresentationStyle = .overFullScreen
+        chatNavController.modalPresentationStyle = .overFullScreen
         self.tabBarController?.present(chatNavController, animated: true, completion: nil)
     }
   
@@ -345,12 +345,14 @@ extension FeedMainController: HomeFeedControllerCellDelegate, HiveFeedController
         let sharePostController = SharePostController()
         sharePostController.post = post
         let sharePostNavController = UINavigationController(rootViewController: sharePostController)
+        sharePostNavController.modalPresentationStyle = .overFullScreen
         self.tabBarController?.present(sharePostNavController, animated: true, completion: nil)
     }
     
     func didTapComments(commentsLikesController: CommentsLikesController) {
         endVideosInChildCells()
         let commentsLikesNavController = UINavigationController(rootViewController: commentsLikesController)
+        commentsLikesNavController.modalPresentationStyle = .overFullScreen
         self.tabBarController?.present(commentsLikesNavController, animated: true, completion: nil)
     }
     

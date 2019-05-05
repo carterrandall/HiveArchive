@@ -72,7 +72,7 @@ class FeedMenuBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate,
         if indexPath.item == 0 {
             cell.screenLabel.text = "Friends"
         } else {
-            cell.screenLabel.text = "Hive"
+            cell.screenLabel.text = "Nearby"
         }
         cell.backgroundColor = .clear
         return cell

@@ -22,7 +22,7 @@ class NotificationsControllerCell: UICollectionViewCell, UITableViewDelegate, UI
     let tableView: UITableView = {
         let tv = UITableView()
         tv.showsVerticalScrollIndicator = false
-        tv.backgroundColor = .white
+        tv.backgroundColor = .clear
         tv.separatorStyle = .none
         tv.showsVerticalScrollIndicator = false
         return tv
@@ -33,7 +33,7 @@ class NotificationsControllerCell: UICollectionViewCell, UITableViewDelegate, UI
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = .white
+        backgroundColor = .clear 
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -43,7 +43,7 @@ class NotificationsControllerCell: UICollectionViewCell, UITableViewDelegate, UI
         tableView.rowHeight = UITableView.automaticDimension
         tableView.contentInset.bottom = 40.0
         tableView.contentInset.top = 0.0
-        tableView.backgroundColor = .white
+        tableView.backgroundColor = .clear
         setupViews()
         paginateNotifications()
     }

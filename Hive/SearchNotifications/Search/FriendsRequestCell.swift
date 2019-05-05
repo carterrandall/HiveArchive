@@ -72,9 +72,11 @@ class FriendsRequestCell: UICollectionViewCell {
         button.setTitle("Accept", for: .normal)
         button.titleLabel?.text = "Accept"
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .mainRed()
-        button.layer.cornerRadius = 2
+        button.setTitleColor(.mainRed(), for: .normal)
+        //button.backgroundColor = .mainRed()
+        button.layer.borderColor = UIColor.mainRed().cgColor
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 5
         button.addTarget(self, action: #selector(handleAdd), for: .touchUpInside)
         return button
     }()
@@ -93,9 +95,11 @@ class FriendsRequestCell: UICollectionViewCell {
         button.setTitle("Hide", for: .normal)
         button.titleLabel?.text = "Hide"
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .lightGray
-        button.layer.cornerRadius = 2
+        button.setTitleColor(.lightGray, for: .normal)
+     //   button.backgroundColor = .lightGray
+        button.layer.borderColor = UIColor.lightGray.cgColor
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 5
         button.addTarget(self, action: #selector(handleHide), for: .touchUpInside)
         return button
     }()

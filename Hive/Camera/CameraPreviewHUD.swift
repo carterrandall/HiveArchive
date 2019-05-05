@@ -22,7 +22,7 @@ class CameraPreviewHUD: UIView {
     let saveButton: UIButton = {
         let button = UIButton(type: .system)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+      //  button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
         button.setTitle("SAVE", for: .normal)
         button.tintColor = UIColor.white
         button.addTarget(self, action: #selector(handleSave), for: .touchUpInside)
@@ -36,7 +36,7 @@ class CameraPreviewHUD: UIView {
     let captionButton: UIButton = {
         let button = UIButton(type: .system)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+       // button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
         button.setTitle("CAPTION", for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(handleCaption), for: .touchUpInside)
@@ -52,7 +52,7 @@ class CameraPreviewHUD: UIView {
         button.setTitle("SHARE", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.setTitleColor(.white, for: .normal)
-        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+       // button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
         button.addTarget(self, action: #selector(handleShare), for: .touchUpInside)
         return button
     }()

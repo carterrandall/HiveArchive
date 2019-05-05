@@ -143,7 +143,7 @@ class UserCalloutView :UIView, MGLCalloutView {
         return view
     }()
     
-    let dim = 0.1266666667 * UIScreen.main.bounds.width
+    let dim = 0.14 * UIScreen.main.bounds.width
     
     required init(annotation: MGLAnnotation) {
         self.representedObject = annotation

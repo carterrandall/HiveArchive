@@ -49,11 +49,12 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
     
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
-        view.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
-        view.layer.borderWidth = 1
+        view.backgroundColor = UIColor.rgb(red: 245, green: 245, blue: 245)
+       // view.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
+        //view.layer.borderWidth = 1
         view.layer.cornerRadius = 5
         view.isUserInteractionEnabled = true
+        view.setShadow(offset: .zero, opacity: 0.1, radius: 3, color: UIColor.black)
         return view
     }()
     
@@ -85,7 +86,6 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
         cv.keyboardDismissMode = .onDrag
         cv.showsVerticalScrollIndicator = false
         cv.contentInset.top = 48.0
-        cv.backgroundColor = .white
         return cv
     }()
     
@@ -156,8 +156,9 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
         searchBar.delegate = self
         messageTextView.delegate = self
         
-        view.backgroundColor = .white 
-
+        view.backgroundColor = .clear
+        collectionView.backgroundColor = .clear
+        
         navigationController?.makeTransparent()
         
         navigationItem.title = "Share Post"
@@ -206,7 +207,11 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
     fileprivate func setupViews() {
         let postWidth = view.frame.width * 0.193236715
         
-       
+       print("SETTING UP VIEWS")
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+        blurView.frame = view.bounds
+        view.insertSubview(blurView, at: 0)
+        
         view.addSubview(collectionView)
         
         view.addSubview(containerView)
@@ -228,7 +233,8 @@ class SharePostController: UIViewController, UICollectionViewDelegate, UICollect
         let searchBarContainerView = UIView()
         searchBarContainerView.layer.cornerRadius = 15
         searchBarContainerView.clipsToBounds = true
-        searchBarContainerView.backgroundColor = UIColor.rgb(red: 240, green: 240, blue: 240)
+        searchBarContainerView.backgroundColor = UIColor.rgb(red: 245, green: 245, blue: 245)
+        searchBarContainerView.setShadow(offset: .zero, opacity: 0.1, radius: 3, color: UIColor.black)
         
         view.addSubview(searchBarContainerView)
         searchBarContainerView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 8, paddingLeft: 40, paddingBottom: 0, paddingRight: 40, width: 0, height: 30)

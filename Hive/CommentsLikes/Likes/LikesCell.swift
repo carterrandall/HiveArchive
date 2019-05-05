@@ -94,8 +94,9 @@ class LikesCell: UICollectionViewCell {
         let button = UIButton(type: .system)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 2
-        button.backgroundColor = .mainRed()
+        button.layer.cornerRadius = 5
+        button.layer.borderColor = UIColor.mainRed().cgColor
+        button.layer.borderWidth = 1
         button.addTarget(self, action: #selector(handleSendUpdateFriendStatus), for: .touchUpInside)
         return button
     }()

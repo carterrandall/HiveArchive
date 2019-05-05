@@ -347,6 +347,7 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
             searchNotificationsController.user = currentUser
         }
         let searchNotificationsNavController = UINavigationController(rootViewController: searchNotificationsController)
+        searchNotificationsNavController.modalPresentationStyle = .overFullScreen
         self.tabBarController?.present(searchNotificationsNavController, animated: true, completion: nil)
         self.endVideosInPreview()
         
@@ -1319,8 +1320,7 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
         //        }
         return namelayer
     }
-
-
+    
     func enterHive(hivedata: HiveData) {
         if self.isPreviewShowing {
             self.closePreview()

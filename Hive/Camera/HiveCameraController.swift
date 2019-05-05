@@ -117,7 +117,7 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         button.addTarget(self, action: #selector(handleToggleTorch), for: .touchUpInside)
         button.setImage(UIImage(named:"flashOff"), for: .normal)
         button.tintColor = .white
-        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+      //  button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
         return button
     }()
     
@@ -126,7 +126,7 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         button.addTarget(self, action: #selector(handleSwitchCamera), for: .touchUpInside)
         button.setImage(UIImage(named:"switchCamera"), for: .normal)
         button.tintColor = .white
-        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+      //  button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
         return button
     }()
     
@@ -134,7 +134,7 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(handleCameraRoll), for: .touchUpInside)
         button.setImage(UIImage(named: "cameraRoll"), for: .normal)
-        button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+        //button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
         button.tintColor = UIColor.white
         return button
     }()
@@ -201,10 +201,15 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
     
     override var prefersStatusBarHidden: Bool { return true }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     var centerView: UIView!
     fileprivate func setupHUD() {
         
         self.navigationController?.makeTransparent()
+        
         let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]
         navigationController?.navigationBar.titleTextAttributes = textAttributes
         
@@ -213,14 +218,15 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
             button.setImage(UIImage(named: "cancel"), for: .normal)
             button.tintColor = .white
             button.addTarget(self, action: #selector(handleDismiss), for: .touchUpInside)
-            button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+           //x button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
             return button
         }()
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: dismissButtonView)
         navigationController?.navigationBar.tintColor = .white
         
-        let topView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        let topView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+
         view.addSubview(topView)
         topView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
         
@@ -229,9 +235,11 @@ class HiveCameraController: UIViewController, AVCapturePhotoCaptureDelegate, AVC
         centerView.isUserInteractionEnabled = false
         centerView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: view.frame.width, height: view.frame.width * (4/3))
         
-        let bottomView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        
+        let bottomView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         view.addSubview(bottomView)
-        bottomView.anchor(top: centerView.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: -10, paddingRight: 0, width: 0, height: 0)
+        
+        bottomView.anchor(top: centerView.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
         
         hiveCameraButton.delegate = self
         view.addSubview(hiveCameraButton)
@@ -831,6 +839,8 @@ extension HiveCameraController: HiveCameraButtonDelegate {
             switchCameraButton.tintColor = .clear
             torchButton.isEnabled = false
             torchButton.tintColor = .clear
+//            cameraRollButton.alpha = 1.0
+//            cameraRollButton.isEnabled = false
             
             movieOutputURL = tempURL()
             
@@ -972,6 +982,8 @@ extension HiveCameraController: HiveCameraButtonDelegate {
         switchCameraButton.tintColor = .white
         torchButton.isEnabled = true
         torchButton.tintColor = .white
+//        cameraRollButton.alpha = 1.0
+//        cameraRollButton.isEnabled = true
         
         if isTorchAndFlashReadyForCapture {
             toggleTorch()
@@ -1016,6 +1028,13 @@ extension HiveCameraController: PreviewPhotoControllerDelegate, VideoPlaybackCon
         self.endSession()
     }
     
+}
+
+extension UINavigationController {
+    
+    open override var preferredStatusBarStyle: UIStatusBarStyle {
+        return topViewController?.preferredStatusBarStyle ?? .default
+    }
 }
 
 

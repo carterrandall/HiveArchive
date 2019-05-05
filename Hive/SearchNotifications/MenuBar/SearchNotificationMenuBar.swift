@@ -25,7 +25,7 @@ class SearchNotificationMenuBar: UIView, UICollectionViewDataSource, UICollectio
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .white
+        cv.backgroundColor = .clear
         cv.delegate = self
         cv.dataSource = self
         cv.showsHorizontalScrollIndicator = false

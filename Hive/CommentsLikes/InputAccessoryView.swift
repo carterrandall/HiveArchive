@@ -76,10 +76,11 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         button.setTitle("@", for: .normal)
         button.setTitleColor(UIColor.mainRed(), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20)
-        button.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
-        button.layer.borderWidth = 1
+       // button.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
+       // button.layer.borderWidth = 1
         button.layer.cornerRadius = 17
-        button.backgroundColor = .white
+        button.backgroundColor = UIColor.rgb(red: 245, green: 245, blue: 245)
+        button.setShadow(offset: .zero, opacity: 0.1, radius: 3, color: UIColor.black)
         button.addTarget(self, action: #selector(handleTag), for: .touchUpInside)
         return button
     }()
@@ -197,12 +198,12 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         textView.delegate = self
         
         let backgroundView = UIView()
-        backgroundView.backgroundColor = .white
+        backgroundView.backgroundColor = UIColor.rgb(red: 245, green: 245, blue: 245)
         addSubview(backgroundView)
         
         backgroundView.clipsToBounds = true
-        backgroundView.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
-        backgroundView.layer.borderWidth = 1
+      //  backgroundView.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
+      //  backgroundView.layer.borderWidth = 1
         backgroundView.layer.cornerRadius = (frame.height - 16) / 2
     
         addSubview(textView)
@@ -212,6 +213,7 @@ class InputAccessoryView: UIView, UITextViewDelegate {
         sendButton.anchor(top: nil, left: nil, bottom: textView.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: -8, paddingRight: 12, width: 50, height: 50)
         
         backgroundView.anchor(top: textView.topAnchor, left: textView.leftAnchor, bottom: textView.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: -4, paddingBottom: 0, paddingRight: 8, width: 0, height: 0)
+        backgroundView.setShadow(offset: .zero, opacity: 0.1, radius: 3, color: UIColor.black)
         
         addSubview(tagButton)
         tagButton.anchor(top: nil, left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: nil, paddingTop: 0, paddingLeft: 8, paddingBottom: 8, paddingRight: 0, width: 34, height: 34)

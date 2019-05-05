@@ -239,6 +239,18 @@ extension StringProtocol {
     }
 }
 
+extension String {
+    func tags() -> [String] {
+        if let regex = try? NSRegularExpression(pattern: "@[a-z0-9]+", options: .caseInsensitive) {
+            let string = self as NSString
+            return regex.matches(in: self, options: [], range: NSRange(location: 0, length: self.count)).map {                    string.substring(with: $0.range).replacingOccurrences(of: "@", with: "").lowercased()
+            }
+        }
+        return []
+    }
+    
+}
+
 extension UIView {
     
     func anchor(top: NSLayoutYAxisAnchor?, left: NSLayoutXAxisAnchor?, bottom: NSLayoutYAxisAnchor?, right: NSLayoutXAxisAnchor?, paddingTop: CGFloat, paddingLeft: CGFloat, paddingBottom: CGFloat, paddingRight: CGFloat, width: CGFloat, height: CGFloat) {

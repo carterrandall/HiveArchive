@@ -83,7 +83,7 @@ class CommentsLikesController: UICollectionViewController, UICollectionViewDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
         MainTabBarController.requestManager.delegate = self
         setupNavBar()
         setupCollectionView()
@@ -117,10 +117,14 @@ class CommentsLikesController: UICollectionViewController, UICollectionViewDeleg
     
     fileprivate func setupCollectionView() {
         
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+        blurView.frame = view.bounds
+        view.insertSubview(blurView, at: 0)
+        
         collectionView.isPagingEnabled = true
         collectionView.bounces = false
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .clear
         collectionView.contentInsetAdjustmentBehavior = .never
         
         view.addSubview(collectionView)

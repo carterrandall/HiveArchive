@@ -38,7 +38,9 @@ class FeedHeaderPageIndicator: UICollectionView, UICollectionViewDataSource, UIC
         let cell = dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
         
         cell.layer.cornerRadius = 1.5
-        if indexPath.item <= selectedPostIndex {
+        if let numberOfItems = self.numberOfItems, numberOfItems == 1 {
+            cell.backgroundColor = .clear
+        } else if indexPath.item <= selectedPostIndex {
             cell.backgroundColor = .mainRed()
         } else {
             cell.backgroundColor = UIColor(white: 1, alpha: 0.3)
@@ -47,11 +49,6 @@ class FeedHeaderPageIndicator: UICollectionView, UICollectionViewDataSource, UIC
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        //        let n = CGFloat(numberOfItems ?? 1)
-        //        let w = (UIScreen.main.bounds.width / 3) // -8
-        //        var s = ((w/n) - 2) - abs(4/n - 2)
-        //        if s < 3 { s = 3 }
-        //        if n == 1 { s = w }
         return CGSize(width: 3, height: 3)
     }
     

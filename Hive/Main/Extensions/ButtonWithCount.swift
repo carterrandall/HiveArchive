@@ -50,9 +50,11 @@ class ButtonWithCount: UIButton {
     
     let countView: UIView = {
         let view = UIView()
-        view.backgroundColor = .mainRed()
+        view.backgroundColor = .white
         view.isHidden = true
         view.isUserInteractionEnabled = false
+        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor.mainRed().cgColor
         return view
     }()
     
@@ -61,7 +63,7 @@ class ButtonWithCount: UIButton {
         label.font = UIFont.boldSystemFont(ofSize: 12)
         label.isHidden = true
         label.textAlignment = .center
-        label.textColor = .white
+        label.textColor = .mainRed()
         label.isUserInteractionEnabled = false
         return label
     }()

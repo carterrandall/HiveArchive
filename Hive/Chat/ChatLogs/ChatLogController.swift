@@ -55,12 +55,16 @@ class ChatLogController: UIViewController, UITableViewDelegate, UITableViewDataS
     
     fileprivate func setupViews() {
         
-        view.backgroundColor = .white
-        tableView.backgroundColor = .white
+        view.backgroundColor = .clear
+        tableView.backgroundColor = .clear
         
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ChatLogCell.self, forCellReuseIdentifier: chatLogCellId)
+        
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+        blurView.frame = view.bounds
+        view.insertSubview(blurView, at: 0)
         
         view.addSubview(tableView)
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)

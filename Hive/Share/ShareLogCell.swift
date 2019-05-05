@@ -57,11 +57,13 @@ class ShareLogCell: UICollectionViewCell {
             if let hasShared = hasShared, hasShared {
                 shareButton.setTitle("Open", for: .normal)
                 shareButton.titleLabel?.text = "Open"
-                shareButton.backgroundColor = .mainBlue()
+                shareButton.layer.borderColor = UIColor.mainBlue().cgColor
+                shareButton.setTitleColor(UIColor.mainBlue(), for: .normal)
             } else {
                 shareButton.setTitle("Send", for: .normal)
                 shareButton.titleLabel?.text = "Send"
-                shareButton.backgroundColor = .mainRed()
+                shareButton.layer.borderColor = UIColor.mainRed().cgColor
+                shareButton.setTitleColor(UIColor.mainRed(), for: .normal)
             }
         }
     }
@@ -103,9 +105,10 @@ class ShareLogCell: UICollectionViewCell {
     lazy var shareButton: UIButton = {
         let button = UIButton(type: .system)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-        button.backgroundColor = .mainRed()
-        button.layer.cornerRadius = 2
-        button.setTitleColor(UIColor.white, for: .normal)
+        button.layer.cornerRadius = 5
+        button.setTitleColor(UIColor.mainRed(), for: .normal)
+        button.layer.borderColor = UIColor.mainRed().cgColor
+        button.layer.borderWidth = 1
         button.addTarget(self, action: #selector(handleShare), for: .touchUpInside)
         return button
     }()
@@ -116,7 +119,9 @@ class ShareLogCell: UICollectionViewCell {
         
         if shareButton.titleLabel?.text == "Send" {
             shareButton.setTitle("Open", for: .normal)
-            shareButton.backgroundColor = .mainBlue()
+            shareButton.layer.borderColor = UIColor.mainBlue().cgColor
+            shareButton.setTitleColor(UIColor.mainBlue(), for: .normal)
+            shareButton.setTitleColor(UIColor.mainBlue(), for: .disabled)
             if let groupId = log?.groupId, groupId != "" {
                 delegate?.didHitShareGroup(groupId: groupId)
             } else {
@@ -149,7 +154,7 @@ class ShareLogCell: UICollectionViewCell {
         profileImageView.layer.cornerRadius = 25
         
         let whiteView = UIView()
-        whiteView.backgroundColor = .white
+        //whiteView.backgroundColor = .white
         insertSubview(whiteView, belowSubview: profileImageView)
         whiteView.anchor(top: nil, left: nil, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 52, height: 52)
         whiteView.centerXAnchor.constraint(equalTo: profileImageView.centerXAnchor).isActive = true

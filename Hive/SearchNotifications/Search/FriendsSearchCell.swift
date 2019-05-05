@@ -86,9 +86,11 @@ class FriendsSearchCell: UICollectionViewCell {
     lazy var friendActionButton: UIButton = {
         let button = UIButton(type: .system)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .mainRed()
-        button.layer.cornerRadius = 2
+        button.setTitleColor(.mainRed(), for: .normal)
+       // button.backgroundColor = .mainRed()
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.mainRed().cgColor
+        button.layer.cornerRadius = 5
         button.addTarget(self, action: #selector(handleSendUpdateFriendStatus), for: .touchUpInside)
         return button
     }()

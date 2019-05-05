@@ -51,10 +51,10 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
             backgroundImageView?.clipsToBounds = true
             backgroundImageView?.frame = view.frame
             view.insertSubview(backgroundImageView!, at: 0)
-            let whiteView = UIView()
-            whiteView.backgroundColor = .white
-            view.insertSubview(whiteView, aboveSubview: backgroundImageView!)
-            whiteView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+            let blackView = UIView()
+            blackView.backgroundColor = .black
+            view.insertSubview(blackView, aboveSubview: backgroundImageView!)
+            blackView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
             
             collectionView.backgroundColor = .clear
             collectionView.bounces = false
@@ -152,12 +152,12 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
     
     fileprivate func setupNavigationButtons() {
         
-        navigationController?.navigationBar.shadowImage = UIImage()
+        
         
         if self.isFromCamera {
             navigationController?.makeTransparent()
             
-            let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+            let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
             view.addSubview(blurView)
             blurView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
             
@@ -166,7 +166,7 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
                 button.setTitle("Cancel", for: .normal)
                 button.tintColor = .white
                 button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
-                button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+            
                 button.addTarget(self, action: #selector(handleCancel), for: .touchUpInside)
                 return button
             }()
@@ -176,16 +176,16 @@ class PhotoSelectionController: UICollectionViewController, UICollectionViewDele
                 button.setTitle("Done", for: .normal)
                 button.tintColor = .white
                 button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
-                button.setShadow(offset: .zero, opacity: 0.3, radius: 3, color: UIColor.black)
+               
                 button.addTarget(self, action: #selector(handleDone), for: .touchUpInside)
                 return button
             }()
             
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButtonView)
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: doneButtonView)
-           
-          
+
         } else {
+            navigationController?.navigationBar.shadowImage = UIImage()
             let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(handleCancel))
             navigationController?.navigationBar.barTintColor = .black
             navigationItem.leftBarButtonItem = cancelButton

@@ -25,14 +25,16 @@ class CommentCell: UITableViewCell {
             let attributedText = NSMutableAttributedString(string: comment.user.username, attributes: [.font: UIFont.boldSystemFont(ofSize: 14) ])
             
             attributedText.append(NSAttributedString(string: " " + comment.text, attributes: [.font: UIFont.systemFont(ofSize: 14)]))
-            attributedText.append(NSAttributedString(string: "\n\(comment.creationDate.timeAgoDisplay())", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.gray]))
+            attributedText.append(NSAttributedString(string: "\n\(comment.creationDate.timeAgoDisplay())", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 12), NSAttributedString.Key.foregroundColor: UIColor.gray]))
             commentLabel.attributedText = attributedText
     
             profileImageView.profileImageCache(url: comment.user.profileImageUrl, userId: comment.user.uid)
             
+        
         }
     }
     
+  
     var showMore: Bool? {
         didSet {
             if let showMore = showMore, showMore {
@@ -67,9 +69,10 @@ class CommentCell: UITableViewCell {
         return label
     }()
     
+    
     lazy var moreButton: UIButton = {
         let button = UIButton(type: .system)
-        button.tintColor = .gray
+        button.tintColor = .lightGray
         button.addTarget(self, action: #selector(handleMore), for: .touchUpInside)
         return button
     }()
@@ -81,7 +84,7 @@ class CommentCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
    
-        backgroundColor = .white
+        backgroundColor = .clear
         
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(profileImageView)

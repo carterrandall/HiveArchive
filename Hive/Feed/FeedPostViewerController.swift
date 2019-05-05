@@ -303,7 +303,7 @@ extension FeedPostViewerController: PostCellDelegate, CommentsLikesControllerDel
         commentsLikesController.delegate = self
         commentsLikesController.index = Int(collectionView.contentOffset.x / view.frame.width)
         let commentsLikesNavController = UINavigationController(rootViewController: commentsLikesController)
-        commentsLikesController.modalPresentationStyle = .overFullScreen
+        commentsLikesNavController.modalPresentationStyle = .overFullScreen
         present(commentsLikesNavController, animated: true, completion: nil)
     }
     
@@ -318,4 +318,5 @@ extension FeedPostViewerController: PostCellDelegate, CommentsLikesControllerDel
             }
         }
     }
+    
 }

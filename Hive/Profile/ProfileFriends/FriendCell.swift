@@ -53,8 +53,8 @@ class FriendCell: UICollectionViewCell {
                     friendActionButton.setTitle("Accept", for: .normal)
                 default:
                     friendActionButton.isHidden = false
-                    friendActionButton.titleLabel?.text = "Add +"
-                    friendActionButton.setTitle("Add +", for: .normal)
+                    friendActionButton.titleLabel?.text = "Add"
+                    friendActionButton.setTitle("Add", for: .normal)
                 }
                 
             }
@@ -98,6 +98,9 @@ class FriendCell: UICollectionViewCell {
         let button = UIButton(type: .system)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.setTitleColor(.mainRed(), for: .normal)
+        button.layer.borderColor = UIColor.mainRed().cgColor
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 5
         button.addTarget(self, action: #selector(handleSendUpdateFriendStatus), for: .touchUpInside)
         return button
     }()
@@ -115,7 +118,7 @@ class FriendCell: UICollectionViewCell {
         var newFriendStatus: Int!
         //if friend status == 0, no button, users already friends
         if friendStatus == 1 { //current user requested, cancel request
-            friendActionButton.setTitle("Add +", for: .normal)
+            friendActionButton.setTitle("Add", for: .normal)
             self.friend?.friendStatus = 3
             newFriendStatus = 3
             
@@ -144,7 +147,7 @@ class FriendCell: UICollectionViewCell {
         profileImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         addSubview(friendActionButton)
-        friendActionButton.anchor(top: nil, left: nil, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 20, width: 80, height: 30)
+        friendActionButton.anchor(top: nil, left: nil, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 20, width: 80, height: 25)
         friendActionButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         friendActionButton.isHidden = true
         

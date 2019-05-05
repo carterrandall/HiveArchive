@@ -48,8 +48,7 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
     var hasSearchedUsers: Bool = false
     var previousQueryString = ""
     func textDidChange(searchText: String, tagging: Bool) {
-        
-        self.updateTags(text: searchText)
+
 
         if !tagging { return }
         
@@ -58,11 +57,16 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
             
             self.shouldShowSearchedUsers = true
             
-            if queryText.lowercased().trimmingCharacters(in: .whitespaces).range(of: previousQueryString.lowercased()) == nil {
+            if queryText.lowercased().range(of: previousQueryString.lowercased()) == nil && previousQueryString.lowercased().range(of: queryText.lowercased()) == nil {
                 print("removing")
                 self.lastIndexSearch = 0
+                self.searchedUsers.removeAll()
+                self.searchedUids.removeAll()
+                self.filteredSearchedUsers.removeAll()
                 self.hasSearchedUsers = false
  
+            } else {
+                print("not nil")
             }
             
             if !self.hasSearchedUsers {
@@ -70,11 +74,14 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
                 paginateSearchedUsers(searchText: queryText)
             }
             
+            self.previousQueryString = queryText
+            
             filteredSearchedUsers = self.searchedUsers.filter({ (user) -> Bool in
                 return (user.username.lowercased().contains(queryText.lowercased().trimmingCharacters(in: .whitespaces))) || (user.fullName.lowercased().contains(queryText.lowercased().trimmingCharacters(in: .whitespaces)))
             })
             
-            
+            self.updateTags(text: searchText)
+        
         } else {
             self.filteredSearchedUsers = searchedUsers
             self.shouldShowSearchedUsers = false
@@ -168,7 +175,7 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
     var searchedUids = [Int]()
     fileprivate func paginateSearchedUsers(searchText: String) {
         print(searchText, "search text", lastIndex, "lastIndex")
-        self.previousQueryString = searchText
+        //self.previousQueryString = searchText
         let params = ["search": searchText, "lastIndex": lastIndexSearch, "added": []] as [String : Any]
         self.lastIndexSearch += 1
         RequestManager().makeJsonRequest(urlString: "/Hive/api/searchFriends", params: params) { (json, _) in
@@ -245,9 +252,6 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
         }
         
         if indexPath.item == self.filteredSearchedUsers.count - 1 && !isFinishedPagingSearch && shouldShowSearchedUsers {
-            if self.filteredSearchedUsers.count < 10 {
-                self.lastIndexSearch = 0
-            }
             self.paginateSearchedUsers(searchText: self.previousQueryString)
         }
         
@@ -286,15 +290,4 @@ class TagCollectionView: UICollectionView, UICollectionViewDelegate, UICollectio
         return CGSize(width: width + 40, height: height)
     }
     
-}
-
-extension String {
-    func tags() -> [String] {
-        if let regex = try? NSRegularExpression(pattern: "@[a-z0-9]+", options: .caseInsensitive) {
-            let string = self as NSString
-            return regex.matches(in: self, options: [], range: NSRange(location: 0, length: self.count)).map {                    string.substring(with: $0.range).replacingOccurrences(of: "@", with: "").lowercased()
-            }
-        }
-        return []
-    }
 }

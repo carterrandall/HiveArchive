@@ -73,7 +73,6 @@ class FeedHeaderPostViewer: UIViewController, UICollectionViewDelegateFlowLayout
         }
     }
 
-    
     let leftProfileImageView: CustomImageView = {
         let iv = CustomImageView()
         iv.contentMode = .scaleAspectFill
@@ -131,9 +130,6 @@ class FeedHeaderPostViewer: UIViewController, UICollectionViewDelegateFlowLayout
         
     }
 
-    
-    
-    
     static let updateFeedHeaderNotificationName = NSNotification.Name(rawValue: "updateFeedHeaderCells")
     @objc fileprivate func handleDismiss() {
         
@@ -195,7 +191,6 @@ class FeedHeaderPostViewer: UIViewController, UICollectionViewDelegateFlowLayout
         }
         
         collectionView.register(PostViewerCell.self, forCellWithReuseIdentifier: postViewerCellId)
-        
 
     }
     
@@ -888,6 +883,7 @@ extension FeedHeaderPostViewer: PostViewerCellDelegate, CommentsLikesControllerD
         commentsLikesController.index = 0
         self.pageIndicator.isHidden = true
         let commentsLikesNavController = UINavigationController(rootViewController: commentsLikesController)
+        commentsLikesNavController.modalPresentationStyle = .overFullScreen
         present(commentsLikesNavController, animated: true, completion: nil)
         
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
@@ -913,6 +909,7 @@ extension FeedHeaderPostViewer: PostViewerCellDelegate, CommentsLikesControllerD
         sharePostController.post = post
         self.pageIndicator.isHidden = true
         let sharePostNavController = UINavigationController(rootViewController: sharePostController)
+        sharePostNavController.modalPresentationStyle = .overFullScreen
         self.present(sharePostNavController, animated: true, completion: nil)
         self.endPlayingVideos()
     }

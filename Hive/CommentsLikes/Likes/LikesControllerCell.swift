@@ -34,7 +34,7 @@ class LikesControllerCell: UICollectionViewCell, UICollectionViewDelegate, UICol
         let layout = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.dataSource = self
-        cv.backgroundColor = .white
+        cv.backgroundColor = .clear 
         cv.delegate = self
         cv.contentInset.top = 0.0
         return cv

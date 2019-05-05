@@ -63,26 +63,26 @@ class ProfileMenuBar: UIView, UICollectionViewDataSource, UICollectionViewDelega
         
         backgroundColor = .clear
         
-        setupHorizontalBar()
+        //setupHorizontalBar()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    var horizontalBarLeftConstraint: NSLayoutConstraint?
-    fileprivate func setupHorizontalBar() {
-        
-        let horizontalBarView = UIView()
-        horizontalBarView.backgroundColor = .mainRed()
-        
-        let width = (UIScreen.main.bounds.width) / 2
-        addSubview(horizontalBarView)
-        horizontalBarView.anchor(top: nil, left: nil, bottom: bottomAnchor, right: nil, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: width, height: 1)
-        horizontalBarLeftConstraint = horizontalBarView.leftAnchor.constraint(equalTo: leftAnchor)
-        horizontalBarLeftConstraint?.isActive = true
-        
-    }
+//    var horizontalBarLeftConstraint: NSLayoutConstraint?
+//    fileprivate func setupHorizontalBar() {
+//
+//        let horizontalBarView = UIView()
+//        horizontalBarView.backgroundColor = .clear
+//
+//        let width = (UIScreen.main.bounds.width - 1) / 2
+//        addSubview(horizontalBarView)
+//        horizontalBarView.anchor(top: nil, left: nil, bottom: bottomAnchor, right: nil, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: width, height: 1)
+//        horizontalBarLeftConstraint = horizontalBarView.leftAnchor.constraint(equalTo: leftAnchor)
+//        horizontalBarLeftConstraint?.isActive = true
+//
+//    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         

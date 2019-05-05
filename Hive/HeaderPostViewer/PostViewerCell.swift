@@ -325,7 +325,9 @@ extension PostViewerCell: PostViewerGestureViewDelegate {
     }
     
     func doubleTap() {
-        self.handleLike()
+        if let hasLiked = self.post?.hasLiked, !hasLiked {
+            self.handleLike()
+        }
     }
 }
 

@@ -3,7 +3,7 @@ import UIKit
 import Mapbox
 
 class CustomUserAnnotationView: MGLUserLocationAnnotationView {
-    let dim = 0.1266666667 * UIScreen.main.bounds.width
+    let dim = 0.14 * UIScreen.main.bounds.width
     var didsetview = false
     override func update() {
         if frame.isNull {
@@ -39,7 +39,7 @@ class CustomUserAnnotationView: MGLUserLocationAnnotationView {
 
 class CustomFriendAnnotationView: MGLAnnotationView {
     
-    let dim = 0.1266666667 * UIScreen.main.bounds.width
+    let dim = 0.14 * UIScreen.main.bounds.width
     let profileImageView: CustomImageView = {
         let iv = CustomImageView()
         iv.contentMode = .scaleAspectFill

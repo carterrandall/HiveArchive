@@ -27,7 +27,7 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
         tv.separatorStyle = .none
         tv.dataSource = self
         tv.delegate = self
-        tv.backgroundColor = .white
+        tv.backgroundColor = .clear
         tv.keyboardDismissMode = .interactive
         tv.showsVerticalScrollIndicator = false
         tv.transform = flipTransform
@@ -114,12 +114,9 @@ class CommentsControllerCell: UICollectionViewCell, UITableViewDelegate, UITable
         if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue, let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey]) as? Double, let curve = (notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey]) as? UInt {
             self.keyboardHeight = keyboardFrame.height
             self.containerView.layoutIfNeeded()
-            print(keyboardHeight, "KEYBOARD HEIGHT")
-//            if keyboardHeight < 60 {
-//                return
-//            }
+            
             DispatchQueue.main.async {
-                self.containerViewBottomConstraint.constant = -keyboardFrame.height
+                self.containerViewBottomConstraint.constant = -keyboardFrame.height + self.safeAreaInsets.bottom
                 
                 UIView.animate(withDuration: duration, delay: 0, options: UIView.AnimationOptions(rawValue: curve), animations: {
                     self.layoutIfNeeded()

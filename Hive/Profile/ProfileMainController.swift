@@ -28,7 +28,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
     
     var isFromSearch: Bool = false
     var isCached: Bool = false
-
+ 
     var user: User?
     var userId: Int?
     var partialUser: User?
@@ -38,7 +38,6 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
     
     
     let headerView = ProfileHeaderView()
-//    var headerView: ProfileHeaderView!
     let editAddButton = ProfileEditAddButton()
     
     lazy var collectionView: UICollectionView = {
@@ -88,7 +87,6 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
         
     }
     
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if wasPushed {
@@ -126,7 +124,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
     }
     
     fileprivate func setupViews() {
-//        headerView = ProfileHeaderView()
+
         view.addSubview(headerView)
         headerView.delegate = self
         headerView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: view.frame.width, height: (UIScreen.main.bounds.width <  375 ? 200 : 220) + UIApplication.shared.statusBarFrame.height)
@@ -136,6 +134,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
         collectionView.anchor(top: headerView.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
         collectionView.register(ProfileFriendsControllerCell.self, forCellWithReuseIdentifier: profileFriendsControllerCellId)
         collectionView.register(ProfilePostsControllerCell.self, forCellWithReuseIdentifier: profilePostsControllerCellId)
+        
     }
     
     
@@ -250,6 +249,7 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
         if let uid = uid {
             params["UID"] = uid
         }
+        
         MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/loadProfile", params: params) { (json, _) in
             guard let json = json as? [String: Any] else {print("WHAT ARE YOU LIDDING "); return }
             print("HREE")
@@ -317,7 +317,6 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
                     self.loadProfile(uid: user.uid)
                 } else {
                     self.loadProfile(uid: nil)
-
                 }
             } else {
                 self.headerView.partialUser = user
@@ -367,11 +366,11 @@ class ProfileMainController: UIViewController, UICollectionViewDelegate, UIColle
         let indexPath = IndexPath(item: menuIndex, section: 0)
         collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: animated)
     }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        menuBar.horizontalBarLeftConstraint?.constant = (scrollView.contentOffset.x) / 2
-    }
-    
+//
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        menuBar.horizontalBarLeftConstraint?.constant = (scrollView.contentOffset.x) / 2
+//    }
+//
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         
         let item = targetContentOffset.pointee.x / view.frame.width

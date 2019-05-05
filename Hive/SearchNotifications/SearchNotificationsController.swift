@@ -30,24 +30,22 @@ class SearchNotificationsController: UICollectionViewController, UICollectionVie
     }()
     
     @objc fileprivate func handleDismiss() {
-        
         self.dismiss(animated: true, completion: nil)
     }
     
-   
     let inviteButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = .white
+        button.backgroundColor = UIColor.rgb(red: 245, green: 245, blue: 245)
         button.setTitle("Invite Friends", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-        button.setTitleColor(UIColor.rgb(red: 252, green: 194, blue: 0), for: .normal)
+        button.setTitleColor(UIColor.mainRed(), for: .normal)
         button.layer.cornerRadius = 15
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.rgb(red: 252, green: 194, blue: 0).cgColor
+        button.layer.borderWidth = 1
+        button.setShadow(offset: .zero, opacity: 0.1, radius: 3, color: UIColor.black)
+        button.layer.borderColor = UIColor.mainRed().cgColor
         button.addTarget(self, action: #selector(handleInvite), for: .touchUpInside)
         return button
     }()
-
     
     @objc fileprivate func handleInvite() {
         if let username = MainTabBarController.currentUser?.username{
@@ -65,7 +63,7 @@ class SearchNotificationsController: UICollectionViewController, UICollectionVie
         super.viewDidLoad()
         
         MainTabBarController.requestManager.delegate = self
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
     
         setupCollectionView()
         setupNavBar()
@@ -78,10 +76,10 @@ class SearchNotificationsController: UICollectionViewController, UICollectionVie
         menuBar.isHidden = false
         dismissButton.isHidden = false
         
-        whiteView = UIView()
-        whiteView.backgroundColor = .white
-        view.addSubview(whiteView)
-        whiteView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+//        whiteView = UIView()
+//        whiteView.backgroundColor = .white
+//        view.addSubview(whiteView)
+//        whiteView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
     
     }
     
@@ -94,7 +92,11 @@ class SearchNotificationsController: UICollectionViewController, UICollectionVie
     
     fileprivate func setupCollectionView() {
         
-        collectionView.backgroundColor = .white
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+        blurView.frame = view.bounds
+        view.insertSubview(blurView, at: 0)
+        
+        collectionView.backgroundColor = .clear
         collectionView.keyboardDismissMode = .onDrag
         collectionView.contentInsetAdjustmentBehavior = .never
         

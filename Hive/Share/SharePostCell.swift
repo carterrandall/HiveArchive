@@ -77,7 +77,7 @@ class SharePostCell: UICollectionViewCell {
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.setTitleColor(UIColor.white, for: .normal)
         button.backgroundColor = .mainRed()
-        button.layer.cornerRadius = 2
+        button.layer.cornerRadius = 5
         button.addTarget(self, action: #selector(handleShare), for: .touchUpInside)
         return button
     }()

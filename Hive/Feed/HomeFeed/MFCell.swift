@@ -15,9 +15,9 @@ class MFCell: UICollectionViewCell {
             guard let story = story else { return }
             
             profileImageView.profileImageCache(url: story.user.profileImageUrl, userId: story.user.uid)
-            
+        
             if story.hasSeenAllPosts {
-                profileImageContainerView.layer.borderColor = UIColor.lightGray.cgColor
+                profileImageContainerView.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
                 profileImageContainerView.layer.borderWidth = 1
             } else {
                 profileImageContainerView.layer.borderColor = UIColor.mainRed().cgColor
@@ -26,13 +26,10 @@ class MFCell: UICollectionViewCell {
         }
     }
     
-   
-    
     override func prepareForReuse() {
         self.story = nil
         self.profileImageView.image = nil
         overlayButton.removeFromSuperview()
-        
     }
   
     let profileImageContainerView: UIView = {
@@ -75,6 +72,7 @@ class MFCell: UICollectionViewCell {
     
     fileprivate func setupCellViews() {
         
+        
         let dim: CGFloat = frame.width
         print(frame.width, "WIDHT")
         addSubview(profileImageContainerView)
@@ -87,7 +85,7 @@ class MFCell: UICollectionViewCell {
         profileImageView.layer.cornerRadius = (dim - 8) / 2
         profileImageView.centerXAnchor.constraint(equalTo: profileImageContainerView.centerXAnchor).isActive = true
         profileImageView.centerYAnchor.constraint(equalTo: profileImageContainerView.centerYAnchor).isActive = true
-    
+
         
     }
 }

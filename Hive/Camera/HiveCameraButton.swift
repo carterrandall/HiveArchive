@@ -38,7 +38,7 @@ class HiveCameraButton: UIButton, UIGestureRecognizerDelegate {
         setupAppearance()
         setupGestureRecognizers()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(volumePress(notification:)), name: NSNotification.Name(rawValue: "AVSystemController_AudioVolumeChangeReasonNotificationParameter"), object: nil)
+      //  NotificationCenter.default.addObserver(self, selector: #selector(volumePress(notification:)), name: NSNotification.Name(rawValue: "AVSystemController_AudioVolumeChangeReasonNotificationParameter"), object: nil)
         
         
     }
@@ -47,17 +47,17 @@ class HiveCameraButton: UIButton, UIGestureRecognizerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc fileprivate func volumePress(notification: NSNotification) {
-        if let userInfo = notification.userInfo {
-            if let volumeChangeType = userInfo["AVSystemController_AudioVolumeChangeReasonNotificationParameter"] as? String {
-                print(volumeChangeType, "volume Change type")
-            } else {
-                print("gay")
-            }
-        } else {
-            print("homo")
-        }
-    }
+//    @objc fileprivate func volumePress(notification: NSNotification) {
+//        if let userInfo = notification.userInfo {
+//            if let volumeChangeType = userInfo["AVSystemController_AudioVolumeChangeReasonNotificationParameter"] as? String {
+//                print(volumeChangeType, "volume Change type")
+//            } else {
+//                print("gay")
+//            }
+//        } else {
+//            print("homo")
+//        }
+//    }
     
     fileprivate func setupAppearance() {
         layer.borderColor = UIColor.white.cgColor
