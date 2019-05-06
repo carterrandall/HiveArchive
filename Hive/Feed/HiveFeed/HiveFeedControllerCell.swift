@@ -44,7 +44,9 @@ class NearbyFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, 
     }()
     
     @objc fileprivate func reloadFeed() {
-        
+        self.posts.removeAll()
+        self.pids.removeAll()
+        self.fetchNearbyPosts()
     }
     
     override init(frame: CGRect) {
@@ -58,7 +60,11 @@ class NearbyFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, 
         collectionView.register(PostCell.self, forCellWithReuseIdentifier: postCellId)
         collectionView.register(FeedPostGridCell.self, forCellWithReuseIdentifier: gridCellId)
         
-        fetchNearbyPosts()
+        if MapRender.mapView.locationManager.authorizationStatus.rawValue != 2 {
+            self.fetchNearbyPosts()
+        } else {
+            self.showAccessoryDisplay()
+        }
 
     }
     
@@ -78,6 +84,7 @@ class NearbyFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, 
             
             self.processPostJson(json: json)
         }
+        self.collectionView.refreshControl?.endRefreshing()
     }
     
     var posts = [Post]()
@@ -113,7 +120,6 @@ class NearbyFeedControllerCell: UICollectionViewCell, UICollectionViewDelegate, 
         }
     }
 
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return posts.count
     }

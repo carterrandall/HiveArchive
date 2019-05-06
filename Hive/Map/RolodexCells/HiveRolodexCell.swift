@@ -1,8 +1,7 @@
 import UIKit
 
 protocol RolidexCellDelegate: class {
-    func enterHive(hivedata: HiveData)
-    func showPreview(cell: RolidexCell)
+
     func recalculateRolodex()
 }
 
@@ -50,22 +49,13 @@ class RolidexCell: UICollectionViewCell {
             self.locationLabel.text = hiveData.name
             self.distanceLabel.text = hiveData.distance.metricformat() // Need to have a USA unit format.
             
-            setInHiveRange()
+            
             
         }}
     
-    func setInHiveRange() {
-        guard let hivedata = hiveData else {return}
-        
-        if hivedata.inHiveRange {
-            self.EnterHiveButton.setImage(UIImage(named: "enterhive"), for: .normal)
-        } else {
-            self.EnterHiveButton.setImage(UIImage(named: "toofaraway"), for: .normal)
-        }
-    }
-    
     override func prepareForReuse() {
-        self.EnterHiveButton.setTitle(nil, for: .normal)
+        locationLabel.text = nil
+        distanceLabel.text = nil
         self.hiveData = nil
         self.postView.image = nil
         self.postView.isHidden = false
@@ -95,39 +85,21 @@ class RolidexCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var EnterHiveButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.backgroundColor = UIColor.clear
-        button.tintColor = .mainRed()
+    func showNoPostsView() {
         
-        button.addTarget(self, action: #selector(enterhivefunction), for: .touchUpInside)
-        return button
-    }()
-    
-    @objc func enterhivefunction() {
-        guard let hivedata = hiveData, let inRange = hiveData?.inHiveRange else { return }
-        if inRange {
-            delegate?.enterHive(hivedata: hivedata)
-        } else {
-            showTooFarAwayView()
-        }
-    }
-    
-    fileprivate func showTooFarAwayView() {
+        let noPostsLabel = UILabel()
+        noPostsLabel.textAlignment = .center
+        noPostsLabel.font = UIFont.boldSystemFont(ofSize: 14/1.2)
+        noPostsLabel.textColor = .mainRed()
+        noPostsLabel.clipsToBounds = true
+        noPostsLabel.text = "No posts in this hive yet!"
+        noPostsLabel.backgroundColor = .white
+        noPostsLabel.numberOfLines = 0
+        noPostsLabel.layer.cornerRadius = 25
         
-        let tooFarAwayLabel = UILabel()
-        tooFarAwayLabel.textAlignment = .center
-        tooFarAwayLabel.font = UIFont.boldSystemFont(ofSize: 14/1.2)
-        tooFarAwayLabel.textColor = .mainRed()
-        tooFarAwayLabel.clipsToBounds = true
-        tooFarAwayLabel.text = "Too far away!"
-        tooFarAwayLabel.backgroundColor = .white
-        tooFarAwayLabel.numberOfLines = 0
-        tooFarAwayLabel.layer.cornerRadius = 25
-        self.EnterHiveButton.isEnabled = false
-        addSubview(tooFarAwayLabel)
-        tooFarAwayLabel.anchor(top: topAnchor, left: nil, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 50, width: 0, height: 0)
-        let tooFarAwayLeft = tooFarAwayLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: frame.width - 51)
+        addSubview(noPostsLabel)
+        noPostsLabel.anchor(top: topAnchor, left: nil, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 50, width: 0, height: 0)
+        let tooFarAwayLeft = noPostsLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: frame.width - 51)
         tooFarAwayLeft.isActive = true
         
         layoutIfNeeded()
@@ -135,20 +107,20 @@ class RolidexCell: UICollectionViewCell {
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
             
             self.layoutIfNeeded()
-            self.EnterHiveButton.alpha = 0.0
+          
             
         }) { (_) in
             tooFarAwayLeft.constant = self.frame.width - 51
             UIView.animate(withDuration: 0.3, delay: 2.0, options: .curveEaseInOut, animations: {
                 
                 self.layoutIfNeeded()
-                self.EnterHiveButton.alpha = 1.0
+               
                 
             }, completion: { (_) in
-                tooFarAwayLabel.removeFromSuperview()
-                self.EnterHiveButton.isEnabled = true
+                noPostsLabel.removeFromSuperview()
+              
                 self.delegate?.recalculateRolodex()
-                
+
             })
             
         }
@@ -171,19 +143,11 @@ class RolidexCell: UICollectionViewCell {
     
     var labelStackView: UIStackView!
     fileprivate func setupViews() {
-        
-        
+    
         addSubview(postView)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handlePreview))
-        postView.addGestureRecognizer(tapGesture)
         postView.anchor(top: nil, left: leftAnchor, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 50, height: 50)
         postView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         postView.layer.cornerRadius = 25
-        
-        
-        addSubview(EnterHiveButton)
-        EnterHiveButton.anchor(top: nil, left: nil, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 40, height: 40)
-        EnterHiveButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         labelStackView = UIStackView(arrangedSubviews: [locationLabel, distanceLabel])
         labelStackView.axis = .vertical
@@ -194,11 +158,6 @@ class RolidexCell: UICollectionViewCell {
         labelStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         labelStackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         
-    }
-    
-    @objc fileprivate func handlePreview() {
-        //  self.animateLoadPreview()
-        delegate?.showPreview(cell: self)
     }
     
 }

@@ -161,7 +161,6 @@ extension LoginSignUpMainController: SignUpControllerCellDelegate, LoginControll
         let tutorialController = TutorialController(collectionViewLayout: layout)
         tutorialController.modalTransitionStyle = .crossDissolve
         tutorialController.modalPresentationStyle = .overFullScreen
-        tutorialController.delegate = self
         self.present(tutorialController, animated: true, completion: nil)
         
     }
@@ -352,10 +351,4 @@ extension LoginSignUpMainController: LoginSignUpAlertViewDelegate {
         }
     }
 
-}
-
-extension LoginSignUpMainController: TutorialControllerDelegate {
-    func completedTutorial() {
-        self.loggedInSuccessfully()
-    }
 }

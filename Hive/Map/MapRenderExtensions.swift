@@ -294,6 +294,25 @@ extension MapRender: InvalidHiveViewDelegate {
 
 extension MapRender: UICollectionViewDelegate, UICollectionViewDataSource {
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let hd = rolodexHives[indexPath.item - 1]
+        if hd.previewImageUrl == nil {
+            if let cell = collectionView.cellForItem(at: indexPath) as? RolidexCell {
+                cell.showNoPostsView()
+            }
+        } else {
+            let hivePostViewerController = HivePostViewerController()
+            let hivePostViewerNavController = UINavigationController(rootViewController: hivePostViewerController)
+            hivePostViewerNavController.modalPresentationStyle = .overFullScreen
+            hivePostViewerNavController.modalPresentationCapturesStatusBarAppearance = true
+            hivePostViewerController.hiveData = rolodexHives[indexPath.item - 1]
+            
+            self.present(hivePostViewerNavController, animated: true, completion: nil)
+        }
+        
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if isFirstLayout {
             if rolodexHives.count >= 1 {

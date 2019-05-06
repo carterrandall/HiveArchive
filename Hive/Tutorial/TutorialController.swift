@@ -8,13 +8,9 @@
 
 import UIKit
 
-protocol TutorialControllerDelegate: class {
-    func completedTutorial()
-}
 
 class TutorialController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    weak var delegate: TutorialControllerDelegate?
     
     let images = ["ProfileAndSearch","HiveJoinCreate","camerapin","FeedLike","Congrats"]
     
@@ -41,7 +37,7 @@ class TutorialController: UICollectionViewController, UICollectionViewDelegateFl
     }()
     
     @objc fileprivate func endTutorial() {
-        delegate?.completedTutorial()
+        self.dismiss(animated: true, completion: nil)
     }
     
     override func viewDidLoad() {

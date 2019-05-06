@@ -18,7 +18,6 @@ protocol SignUpControllerCellDelegate: class {
     func showCountryCode(controller: CountryCodeController)
     func lockScreen()
     func unlockScreen()
-    func showTutorial()
 }
 
 class SignUpControllerCell: UICollectionViewCell {
@@ -178,14 +177,9 @@ extension SignUpControllerCell: SignUpInputViewDelegate, CAAnimationDelegate {
                             } catch {
                                 print("error saving password to keychain")
                             }
+                        
+                            self.delegate?.loggedInSuccessfully()
                             
-                            
-                            if UserDefaults.standard.value(forKey: "tutorial") == nil {
-                                UserDefaults.standard.set(1, forKey: "tutorial")
-                                self.delegate?.showTutorial()
-                            } else {
-                                self.delegate?.loggedInSuccessfully()
-                            }
                         }
                         else{
                             self.cancelAnimate()

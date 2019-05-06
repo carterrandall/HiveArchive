@@ -17,7 +17,9 @@ class HivePostViewerController: UIViewController, UICollectionViewDelegate, UICo
     var hiveData: HiveData? {
         didSet {
             print("123")
-            self.paginateHivePosts()
+            guard let hd = hiveData else { return }
+            self.loadHiveFeed(hid: hd.id)
+            self.navigationItem.title = hd.name
         }
     }
     
@@ -31,6 +33,9 @@ class HivePostViewerController: UIViewController, UICollectionViewDelegate, UICo
         cv.alwaysBounceVertical = true
         return cv
     }()
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle { return .lightContent }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,7 +61,7 @@ class HivePostViewerController: UIViewController, UICollectionViewDelegate, UICo
         navigationController?.makeTransparent()
         let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
         navigationController?.navigationBar.titleTextAttributes = textAttributes
-        navigationItem.title = "Hive Name Here"
+   
         
         let dismissButton = UIBarButtonItem(image: UIImage(named: "cancel"), style: .plain, target: self, action: #selector(handleDismiss))
         navigationItem.leftBarButtonItem = dismissButton
@@ -69,11 +74,22 @@ class HivePostViewerController: UIViewController, UICollectionViewDelegate, UICo
         self.dismiss(animated: true, completion: nil)
     }
     
+    fileprivate func loadHiveFeed(hid: Int) {
+        let params = ["HID":hid]
+        MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/maploadHiveFeed", params: params) { (json, _) in
+            guard let json = json as? [String: Any] else { return }
+            if let postJson = json["Posts"] as? [[String: Any]], let postCount = json["FeedCount"] as? Int {
+                self.isFinishedPaging = (postCount < 10 ? true : false)
+                self.processPosts(json: postJson, new: false)
+            }
+        }
+    }
+    
     fileprivate func paginateHivePosts() {
         print("paginating")
         guard let oldestDate = self.posts.last?.creationDate.timeIntervalSince1970, let newestDate = self.posts.first?.creationDate.timeIntervalSince1970, let hid = self.hiveData?.id else { return }
         let params = ["lastPost": oldestDate, "newestPost": newestDate, "HID": hid] as [String: Any]
-        MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/paginateFeed", params: params) { (json, _) in
+        MainTabBarController.requestManager.makeJsonRequest(urlString: "/Hive/api/mappaginateHiveFeed", params: params) { (json, _) in
             guard let json = json as? [String: Any] else { return }
            
             if let postJson = json["Posts"] as? [[String: Any]], let postCount = json["FeedCount"] as? Int {

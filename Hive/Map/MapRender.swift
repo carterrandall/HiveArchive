@@ -63,7 +63,21 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
         self.setupNavBar()
         NotificationCenter.default.addObserver(self, selector: #selector(handleDidEnterForeground), name: MapRender.didEnterForegroundForMapNotificationName,  object: nil)
         
+        
+        if UserDefaults.standard.value(forKey: "tutorial") == nil {
+            print("tutorial")
+            UserDefaults.standard.set(1, forKey: "tutorial")
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .horizontal
+            let tutorialController = TutorialController(collectionViewLayout: layout)
+            tutorialController.modalTransitionStyle = .crossDissolve
+            tutorialController.modalPresentationStyle = .overFullScreen
+            self.present(tutorialController, animated: true, completion: nil)
+        }
     } // End func viewDidLoad()
+
+    
+
     
     func logoutOfMap(){ // check that this will work when you are in a hive as well.
         var annotations = [MGLAnnotation]()
@@ -302,9 +316,7 @@ class MapRender: UIViewController, MGLMapViewDelegate, CLLocationManagerDelegate
         
         let searchButton = UIBarButtonItem(customView: customView)
         
-        let nearbyButton = UIBarButtonItem(image: UIImage(named: "eye")?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(handleNearby))
-        
-        navigationItem.rightBarButtonItems = [searchButton, nearbyButton]
+        navigationItem.rightBarButtonItem = searchButton
         navigationController?.navigationBar.tintColor = .black
         
         let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.mainRed(), NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
