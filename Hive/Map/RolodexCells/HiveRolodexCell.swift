@@ -85,9 +85,10 @@ class RolidexCell: UICollectionViewCell {
         return label
     }()
     
+    var noPostsLabel: UILabel!
     func showNoPostsView() {
-        
-        let noPostsLabel = UILabel()
+        guard noPostsLabel == nil else { return }
+        noPostsLabel = UILabel()
         noPostsLabel.textAlignment = .center
         noPostsLabel.font = UIFont.boldSystemFont(ofSize: 14/1.2)
         noPostsLabel.textColor = .mainRed()
@@ -117,8 +118,8 @@ class RolidexCell: UICollectionViewCell {
                
                 
             }, completion: { (_) in
-                noPostsLabel.removeFromSuperview()
-              
+                self.noPostsLabel.removeFromSuperview()
+                self.noPostsLabel = nil
                 self.delegate?.recalculateRolodex()
 
             })

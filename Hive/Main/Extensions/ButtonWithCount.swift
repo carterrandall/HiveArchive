@@ -25,6 +25,7 @@ class ButtonWithCount: UIButton {
                 countView.isHidden = false
                 countLabel.isHidden = false
                 countLabel.text = " "
+                countView.backgroundColor = .mainRed()
             } else {
                 countView.isHidden = true
                 countLabel.isHidden = true
