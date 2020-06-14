@@ -1,6 +1,6 @@
 # HiveArchive
 
-## Hive was a location based social media app availible on the App Store in 2019. 
+## Hive was a location based social media app available on the App Store in 2019. 
 
 ![alt](https://github.com/carterrandall/HiveArchive/blob/bator/screenshots/750x750bb.jpeg)
 
