@@ -4,7 +4,6 @@
 //
 //  Created by Carter Randall on 2018-09-21.
 //  Copyright © 2018 Carter Randall. All rights reserved.
-//
 
 import UIKit
 
