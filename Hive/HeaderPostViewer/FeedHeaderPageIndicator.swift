@@ -1,5 +1,5 @@
 import UIKit
-
+//
 class FeedHeaderPageIndicator: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     fileprivate let cellId = "cellId"
